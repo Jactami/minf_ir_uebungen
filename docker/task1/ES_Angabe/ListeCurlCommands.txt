@@ -1,0 +1,17 @@
+Prüfen of ein Index existiert:
+curl localhost:9200/shakespeare --head
+
+Index löschen:
+curl -X DELETE localhost:9200/shakespeare
+
+Index erstellen:
+curl -X PUT localhost:9200/shakespeare
+
+Mapping laden:
+curl -X PUT localhost:9200/shakespeare/_mapping -H "Content-Type: application/json" --data @mapping.json
+
+JSON laden:
+curl -XPOST localhost:9200/shakespeare/_bulk?pretty -H "Content-Type: application/x-ndjson" --data-binary @shakespeare_6.0.json
+
+Query ausführen:
+curl localhost:9200/shakespeare/_search?pretty -H "Content-Type: application/json" -d @file_with_query.json

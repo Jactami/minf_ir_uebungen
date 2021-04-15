@@ -1,0 +1,29 @@
+{
+    "properties": {
+        "speaker": {
+            "type": "text",
+            "fields": {
+                "keyword": {
+                    "type": "keyword"
+                }
+            }
+        },
+        "play_name": {
+            "type": "keyword",
+            "fields": {
+                "text": {
+                    "type": "text"
+                }
+            }
+        },
+        "line_id": {
+            "type": "integer"
+        },
+        "speech_number": {
+            "type": "integer"
+        },
+        "text_entry": {
+            "type": "text"
+        }
+    }
+}

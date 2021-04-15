@@ -8,11 +8,16 @@ services:
         environment: 
             - discovery.type=single-node
         networks: 
-            - search
+            search:
+                aliases: 
+                    - elasticsearch
     kibana:
+        depends_on: 
+            - elastic
         image: docker.elastic.co/kibana/kibana:7.12.0
         ports: 
             - "5601:5601"
         networks: 
             - search
-            
+networks: 
+    search:
