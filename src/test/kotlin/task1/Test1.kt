@@ -18,7 +18,6 @@ class TestsFor1 {
     @DisplayName("Abgabe 1")
     fun tasks() = testFactoryDefinition {
 
-
         "Task 1" asTest {
             val expected = Hash.create(5, 38, 57, 93, 74, -5, 94, 74, 125, 44, -51, -43, 37, -42, -37, -72, 14, -15, -119, 98, -72, 53, -110, 69, -77, 106, -90, 37, 100, 60, -121, -56)
             val studentHash = pathToHandInExcel.readHashOf("1) GMAP"){
