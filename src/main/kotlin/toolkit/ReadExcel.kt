@@ -19,13 +19,31 @@ class SheetAccess(val sheet: Sheet): Sheet by sheet {
     val String.cell: Cell? get() = CellAddress(this).cell
 
     @ReadExcelDSL
+    val Iterable<CellAddress?>.cells get() = map { it?.cell }
+
+    @ReadExcelDSL
+    val Iterable<CellAddress?>.cellsNotNull get() = mapNotNull { it?.cell }
+
+    @ReadExcelDSL
+    val Sequence<CellAddress?>.cells get() = map { it?.cell }
+
+    @ReadExcelDSL
+    val Sequence<CellAddress?>.cellsNotNull get() = mapNotNull { it?.cell }
+
+    @ReadExcelDSL
     operator fun get(row: Int, col: Int): Cell? = getRow(row)?.getCell(col)
 
     @ReadExcelDSL
     inline operator fun <T> String.invoke(block: Cell.() -> T): T? = cell?.block()
 
     @ReadExcelDSL
+    fun from(address: CellAddress): CellAddress = address
+
+    @ReadExcelDSL
     fun from(row: Int, col: Int): CellAddress = CellAddress(row, col)
+
+    @ReadExcelDSL
+    fun from(address: String): CellAddress = CellAddress(address)
 
     @ReadExcelDSL
     infix fun CellAddress.to(other: CellAddress) = this.spanTo(other).map { it.cell }
@@ -34,21 +52,25 @@ class SheetAccess(val sheet: Sheet): Sheet by sheet {
     fun CellAddress.to(row: Int, col: Int) = this.spanTo(CellAddress(row, col))
 
     @ReadExcelDSL
-    infix fun Sequence<CellAddress>.and(other: Sequence<CellAddress>): Sequence<CellAddress> = this + other
+    fun CellAddress.to(address: String) = this.spanTo(CellAddress(address))
 
     @ReadExcelDSL
-    val Sequence<CellAddress?>.cellValues get() = map { it?.cell }
+    infix fun Sequence<CellAddress>.and(other: Sequence<CellAddress>): Sequence<CellAddress> = this + other
 }
 
 class WorkbookAccess(val workbook: Workbook): Workbook by workbook {
+    @ReadExcelDSL
     inline operator fun <T> String.invoke(block: SheetAccess.() -> T): T = sheet(this, block)
 }
 
+fun Workbook.asAccess(): WorkbookAccess =
+       if(this is WorkbookAccess) this else WorkbookAccess(this)
+
+fun loadAsExcel(file: File) = XSSFWorkbook(file).asAccess()
+
 @ReadExcelDSL
-inline fun <T> readExcel(file: File, block: WorkbookAccess.() -> T): T {
-    val workbook: Workbook = file.inputStream().use { XSSFWorkbook(it) }
-    return WorkbookAccess(workbook).block()
-}
+inline fun <T> useAsExcel(file: File, block: WorkbookAccess.() -> T): T =
+        XSSFWorkbook(file).asAccess().use { it.block() }
 
 @ReadExcelDSL
 inline fun <T> Workbook.sheet(name: String, block: SheetAccess.() -> T): T {
@@ -81,65 +103,3 @@ fun CellAddress.spanTo(other: CellAddress) = sequence {
 }
 
 fun Pair<Int, Int>.toCellAddress() = CellAddress(first, second)
-
-
-
-
-
-
-
-
-
-fun interface HashCollector {
-    fun SheetAccess.collect(): Hash
-    fun collectHelper(access: SheetAccess): Hash = access.collect()
-}
-
-@OptIn(ExperimentalStdlibApi::class)
-fun File.collectData(
-        vararg toCollect: Pair<String, HashCollector>
-): Map<String, Hash> =
-        buildMap {
-            readExcel(this@collectData){
-                toCollect.forEach { (sheetName, collector) ->
-                    sheetName {
-                        this@buildMap[sheetName] = collector.collectHelper(this)
-                    }
-                }
-            }
-        }
-
-
-fun main() {
-
-    val targ = File("D:\\NextCloud\\IR\\Übungen\\2021_SS\\Solutions\\1\\Solution_1_Handout - Kopie.xlsm")
-
-    readExcel(targ){
-        "1) GMAP" {
-            val cells = from(8, 1).to(10,2).cellValues.filterNotNull().map { it.numericCellValue }.toList()
-            println(hash { updateWithDoubles(cells) }.convertToArrayDeclaration())
-        }
-        "3) NDCG" {
-            val toLoad = from(35, 2).to(37, 8) and from(40, 2).to(41, 8)
-            val cells = toLoad.cellValues.mapNotNull { it?.numericCellValue }.toList()
-            val callsString = from(43,2).to(43, 8).cellValues.mapNotNull { it?.stringCellValue }.toList()
-
-            println(hash { updateWithDoubles(cells); updateWithStrings(callsString) }.convertToArrayDeclaration())
-        }
-
-        "4) Ranking" {
-            val cells = from(12,1).to(13, 3).cellValues.mapNotNull { it?.numericCellValue }.toList()
-            println(hash { updateWithDoubles(cells) }.convertToArrayDeclaration())
-        }
-
-        "5) t-Test" {
-            val cell = from(10, 1).cell?.numericCellValue
-            println(cell?.toHash()?.convertToArrayDeclaration())
-        }
-
-        "6) VSM" {
-            val cells = from(20,1).to(21, 3).cellValues.mapNotNull { it?.numericCellValue }.toList()
-            println(hash { updateWithDoubles(cells) }.convertToArrayDeclaration())
-        }
-    }
-}

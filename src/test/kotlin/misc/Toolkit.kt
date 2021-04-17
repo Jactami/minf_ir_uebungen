@@ -3,7 +3,7 @@ package misc
 import org.junit.jupiter.api.Assertions
 import toolkit.Hash
 import toolkit.SheetAccess
-import toolkit.readExcel
+import toolkit.useAsExcel
 import java.io.File
 
 @Suppress("NOTHING_TO_INLINE")
@@ -26,9 +26,9 @@ inline fun <reified T> Triple<T, T, T>.toArray(): Array<T> = arrayOf(first, seco
 
 
 fun File.readHashOf(taskName: String, hashReader: SheetAccess.() -> Hash) =
-        readExcel(this){
+        useAsExcel(this){
             taskName{ hashReader() }
         }
 
 
-fun Double.roundForEvaluation(n: Int = 5) = String.format("%.${n}f", this)
+fun Double.toStringForEvalWithNDigits(n: Int) = String.format("%.${n}f", this)
