@@ -1,5 +1,6 @@
 package misc
 
+import org.apache.poi.ss.util.CellAddress
 import org.junit.jupiter.api.Assertions
 import toolkit.Hash
 import toolkit.SheetAccess
@@ -25,7 +26,7 @@ inline fun <reified T> Pair<T, T>.toArray(): Array<T> = arrayOf(first, second)
 inline fun <reified T> Triple<T, T, T>.toArray(): Array<T> = arrayOf(first, second, third)
 
 
-fun File.readHashOf(taskName: String, hashReader: SheetAccess.() -> Hash) =
+fun <T> File.readHashOf(taskName: String, hashReader: SheetAccess.() -> T) =
         useAsExcel(this){
             taskName{ hashReader() }
         }

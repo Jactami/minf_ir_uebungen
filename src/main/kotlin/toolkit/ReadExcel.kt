@@ -46,7 +46,7 @@ class SheetAccess(val sheet: Sheet): Sheet by sheet {
     fun from(address: String): CellAddress = CellAddress(address)
 
     @ReadExcelDSL
-    infix fun CellAddress.to(other: CellAddress) = this.spanTo(other).map { it.cell }
+    infix fun CellAddress.to(other: CellAddress) = this.spanTo(other)
 
     @ReadExcelDSL
     fun CellAddress.to(row: Int, col: Int) = this.spanTo(CellAddress(row, col))

@@ -13,6 +13,7 @@ inline class Hash(val value: ByteArray) {
     companion object {
         fun create(vararg values: Byte) = Hash(values)
     }
+
 }
 
 @Suppress("NOTHING_TO_INLINE")

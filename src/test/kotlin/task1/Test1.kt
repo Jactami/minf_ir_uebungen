@@ -108,7 +108,7 @@ class TestsFor1 {
             pathToHandIn.walkTopDown().filter { println(it); it.extension == "json" && "ergebnis" in it.nameWithoutExtension }.forEach { file ->
                 file.name asTest {
                     val expected = results.getValue(file.nameWithoutExtension)
-                    val student = hash { update(readResult(file)) }.also { println(it.convertToArrayDeclaration()) }
+                    val student = hash { update(readResult(file)) }.also { println(it) }
                     assertHashEquals(expected, student)
                 }
             }
