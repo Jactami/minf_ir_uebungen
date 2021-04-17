@@ -83,19 +83,19 @@ CALL CreateIndex.bat --silent %debug%
 REM Anfragen
 ECHO.
 ECHO Anfrage 1:
-curl localhost:9200/shakespeare/_search?pretty -H "Content-Type: application/json" -d @anfrage1.json > "%~dp0ergebnis1.json"
+curl localhost:9200/shakespeare/_search?size=50^&pretty=true -H "Content-Type: application/json" -d @anfrage1.json > "%~dp0ergebnis1.json"
 ECHO.
 ECHO Anfrage 2:
-curl localhost:9200/shakespeare/_search?pretty -H "Content-Type: application/json" -d @anfrage2.json > "%~dp0ergebnis2.json"
+curl localhost:9200/shakespeare/_search?size=50^&pretty=true -H "Content-Type: application/json" -d @anfrage2.json > "%~dp0ergebnis2.json"
 ECHO.
 ECHO Anfrage 3:
-curl localhost:9200/shakespeare/_search?pretty -H "Content-Type: application/json" -d @anfrage3.json > "%~dp0ergebnis3.json"
+curl localhost:9200/shakespeare/_search?size=50^&pretty=true -H "Content-Type: application/json" -d @anfrage3.json > "%~dp0ergebnis3.json"
 ECHO.
 ECHO Anfrage 4:
-curl localhost:9200/shakespeare/_search?pretty -H "Content-Type: application/json" -d @anfrage4.json > "%~dp0ergebnis4.json"
+curl localhost:9200/shakespeare/_search?size=50^&pretty=true -H "Content-Type: application/json" -d @anfrage4.json > "%~dp0ergebnis4.json"
 ECHO.
 ECHO Anfrage 5:
-curl localhost:9200/shakespeare/_search?pretty -H "Content-Type: application/json" -d @anfrage5.json > "%~dp0ergebnis5.json"
+curl localhost:9200/shakespeare/_search?size=50^&pretty=true -H "Content-Type: application/json" -d @anfrage5.json > "%~dp0ergebnis5.json"
 ECHO.
 
 :END

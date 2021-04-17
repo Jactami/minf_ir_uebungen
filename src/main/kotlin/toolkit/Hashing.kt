@@ -19,11 +19,11 @@ inline class Hash(val value: ByteArray) {
 inline fun ByteArray.asHash() = Hash(this)
 
 
-interface IHashable {
+interface Hashable {
     /**
-     * Returns a Base64Hash generated with a class-specific hashing algorithm
+     * Update [this] with the
      */
-    fun toHash(): Hash
+    fun MessageDigest.update()
 }
 
 fun hash(block: MessageDigest.() -> Unit) =
@@ -43,4 +43,28 @@ fun MessageDigest.update(s: String, charset: Charset = Charsets.UTF_8){
 
 fun MessageDigest.updateWithStrings(values: Iterable<String>) {
     values.forEach { update(it) }
+}
+
+fun MessageDigest.update(hashable: Hashable) {
+    hashable.apply { update() }
+}
+
+fun MessageDigest.update(number: Number) {
+    update(number.bytes())
+}
+
+fun MessageDigest.update(char: Char) {
+    update(char.bytes())
+}
+
+fun MessageDigest.update(number: UInt) {
+    update(number.bytes())
+}
+
+fun MessageDigest.update(number: UShort) {
+    update(number.bytes())
+}
+
+fun MessageDigest.update(number: ULong) {
+    update(number.bytes())
 }

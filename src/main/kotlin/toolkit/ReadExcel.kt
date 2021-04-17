@@ -81,3 +81,65 @@ fun CellAddress.spanTo(other: CellAddress) = sequence {
 }
 
 fun Pair<Int, Int>.toCellAddress() = CellAddress(first, second)
+
+
+
+
+
+
+
+
+
+fun interface HashCollector {
+    fun SheetAccess.collect(): Hash
+    fun collectHelper(access: SheetAccess): Hash = access.collect()
+}
+
+@OptIn(ExperimentalStdlibApi::class)
+fun File.collectData(
+        vararg toCollect: Pair<String, HashCollector>
+): Map<String, Hash> =
+        buildMap {
+            readExcel(this@collectData){
+                toCollect.forEach { (sheetName, collector) ->
+                    sheetName {
+                        this@buildMap[sheetName] = collector.collectHelper(this)
+                    }
+                }
+            }
+        }
+
+
+fun main() {
+
+    val targ = File("D:\\NextCloud\\IR\\Übungen\\2021_SS\\Solutions\\1\\Solution_1_Handout - Kopie.xlsm")
+
+    readExcel(targ){
+        "1) GMAP" {
+            val cells = from(8, 1).to(10,2).cellValues.filterNotNull().map { it.numericCellValue }.toList()
+            println(hash { updateWithDoubles(cells) }.convertToArrayDeclaration())
+        }
+        "3) NDCG" {
+            val toLoad = from(35, 2).to(37, 8) and from(40, 2).to(41, 8)
+            val cells = toLoad.cellValues.mapNotNull { it?.numericCellValue }.toList()
+            val callsString = from(43,2).to(43, 8).cellValues.mapNotNull { it?.stringCellValue }.toList()
+
+            println(hash { updateWithDoubles(cells); updateWithStrings(callsString) }.convertToArrayDeclaration())
+        }
+
+        "4) Ranking" {
+            val cells = from(12,1).to(13, 3).cellValues.mapNotNull { it?.numericCellValue }.toList()
+            println(hash { updateWithDoubles(cells) }.convertToArrayDeclaration())
+        }
+
+        "5) t-Test" {
+            val cell = from(10, 1).cell?.numericCellValue
+            println(cell?.toHash()?.convertToArrayDeclaration())
+        }
+
+        "6) VSM" {
+            val cells = from(20,1).to(21, 3).cellValues.mapNotNull { it?.numericCellValue }.toList()
+            println(hash { updateWithDoubles(cells) }.convertToArrayDeclaration())
+        }
+    }
+}
