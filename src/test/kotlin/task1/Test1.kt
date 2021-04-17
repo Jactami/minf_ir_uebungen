@@ -11,12 +11,14 @@ import java.io.File
 
 @DisplayName("Tests for 1")
 class TestsFor1 {
-    val pathToHandInExcel: File = File("D:\\NextCloud\\IR\\Übungen\\2021_SS\\Solutions\\1\\Solution_1_Handout - Kopie.xlsm") // TODO("Pfad zur Abgabe xlsx/xslm.")
-    val pathToHandIn: File = File("./docker/task1/ES_Angabe")
+    val pathToHandInExcel: File get() = TODO("Pfad zur Abgabe xlsx/xslm.")
+    val pathToHandIn: File get() =  File("./docker/task1/ES_Angabe")
 
     @TestFactory
     @DisplayName("Abgabe 1")
     fun tasks() = testFactoryDefinition {
+
+
         "Task 1" asTest {
             val expected = Hash.create(5, 38, 57, 93, 74, -5, 94, 74, 125, 44, -51, -43, 37, -42, -37, -72, 14, -15, -119, 98, -72, 53, -110, 69, -77, 106, -90, 37, 100, 60, -121, -56)
             val studentHash = pathToHandInExcel.readHashOf("1) GMAP"){
@@ -82,10 +84,10 @@ class TestsFor1 {
         
         val results = mapOf(
                 "ergebnis1" to Hash.create(18, -95, 39, -9, 101, -74, 90, 49, -119, -108, -5, -29, -97, -54, 13, -34, 113, 76, -73, -21, 101, -88, -79, -107, 77, -53, -100, 34, -120, -44, -72, -62),
-                "ergebnis2" to Hash.create(-115, 13, 27, -120, 85, -38, 73, -62, -1, -31, 45, 47, -43, -76, 9, 120, -45, -4, 41, -25, -69, 123, -97, 107, -84, -69, 88, 48, 91, 119, -8, -47),
-                "ergebnis3" to Hash.create(-18, 71, -89, -54, -2, 121, -5, -19, 107, -72, 82, -4, 45, 81, -104, -76, -10, -20, 36, -66, 120, -38, 108, 6, 95, -32, -37, -109, -76, 61, 125, 19),
-                "ergebnis4" to Hash.create(78, 82, -23, 73, 120, 109, -23, -21, 115, -27, 10, 40, -43, -73, -34, -103, 104, 1, -116, 35, 100, -81, 81, 1, 19, 125, -8, 124, 89, -91, -121, -4),
-                "ergebnis5" to Hash.create(-18, 43, 96, 46, -15, -26, -108, -111, -70, 44, 124, -36, 125, 27, -13, -36, 90, 34, -68, -74, -39, -96, 101, -62, -36, 41, -24, -73, 43, -76, 86, 22),
+                "ergebnis2" to Hash.create(-40, 65, -124, 48, -9, 8, -116, -118, -23, 111, -94, 127, -86, 66, 65, -112, 13, 67, -17, 108, 104, -18, -83, 87, -93, -103, 44, 115, -74, -92, 66, -90),
+                "ergebnis3" to Hash.create(-53, -46, 57, -43, 79, 108, 57, 85, 32, -119, -61, 69, -83, 99, 71, -7, 11, 34, 15, -100, -48, 115, 58, 38, 78, 47, 66, -83, -66, 12, 18, -76),
+                "ergebnis4" to Hash.create(-85, 48, 72, 40, 97, -107, 35, 0, 2, -108, -94, -36, 48, -18, -59, 82, 90, 24, 28, -29, 118, 19, 109, -3, 125, -28, -19, -101, 14, -42, 113, -64),
+                "ergebnis5" to Hash.create(-18, -74, -89, -5, -56, -72, -7, -73, 30, 107, -106, -119, -99, -59, 67, -40, -3, 71, 13, -11, -12, 12, 18, -114, -46, -51, -38, 127, -120, -64, 66, 115),
         )
 
         "Task 7" asGroup {
