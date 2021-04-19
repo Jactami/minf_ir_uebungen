@@ -46,6 +46,10 @@ fun MessageDigest.updateWithStrings(values: Iterable<String>) {
     values.forEach { update(it) }
 }
 
+fun MessageDigest.update(values: Collection<Number>) {
+    update(values.bytes())
+}
+
 fun MessageDigest.update(hashable: Hashable) {
     hashable.apply { update() }
 }

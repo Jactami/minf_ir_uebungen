@@ -26,7 +26,7 @@ inline fun <reified T> Pair<T, T>.toArray(): Array<T> = arrayOf(first, second)
 inline fun <reified T> Triple<T, T, T>.toArray(): Array<T> = arrayOf(first, second, third)
 
 
-fun <T> File.readHashOf(taskName: String, hashReader: SheetAccess.() -> T) =
+fun <T> File.readValueOf(taskName: String, hashReader: SheetAccess.() -> T) =
         useAsExcel(this){
             taskName{ hashReader() }
         }
