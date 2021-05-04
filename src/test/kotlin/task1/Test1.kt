@@ -60,7 +60,7 @@ class TestsFor1 {
         }
 
         "Task 4" asTest {
-            val expected = Hash.create(-108, 121, 85, -110, -3, 110, 24, 18, -29, -107, -118, -117, -98, -123, 115, -61, 121, 40, 57, 103, -33, 74, 78, 116, -5, -17, -65, 53, -72, 66, -6, -3)
+            val expected = Hash.create(-57, 34, -93, -4, 126, 71, 5, 56, -18, 71, -58, 93, -118, -68, 30, -67, -40, -23, -111, -70, -125, 2, -41, -27, 48, -112, 24, -64, -54, -20, -105, 109)
             val studentHash = pathToHandInExcel.readValueOf("4) Ranking"){
                 val toLoad = from(12,1).to(13, 3)
                 val cells = toLoad.cellsNotNull
