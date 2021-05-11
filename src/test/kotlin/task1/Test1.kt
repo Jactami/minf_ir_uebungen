@@ -10,7 +10,7 @@ import java.io.File
 
 @DisplayName("Tests for 1")
 class TestsFor1 {
-    val pathToHandInExcel: File get() = TODO("Pfad zur Abgabe xlsx/xslm.")
+    val pathToHandInExcel: File get() = File("D:\\NextCloud\\IR\\Übungen\\2021_SS\\Solutions\\1\\Solution_1_Handout.xlsm")
     val pathToHandIn: File get() =  File("./docker/task1/ES_Angabe")
 
 
@@ -83,17 +83,47 @@ class TestsFor1 {
             assertHashEquals(expected, studentHash)
         }
 
-        "Task 6" asTest {
-            val expected = Hash.create(113, 116, -34, 105, -47, 81, 84, 18, -11, -41, 6, 25, -97, -123, -96, 93, 28, 106, 19, -49, -101, -82, -97, -7, 103, 50, -24, 41, 45, -6, -26, -16)
-            val studentHash = pathToHandInExcel.readValueOf("6) VSM"){
-                val toLoad = from(20,1).to(21, 3)
-                val cells = toLoad.cellsNotNull
-                        .map { it.numericCellValue.toStringForEvalWithNDigits(5) }
-                        .toList()
-                println(cells.joinToString())
-                hash { updateWithStrings(cells) }
-            }.also { println(it.convertToArrayDeclaration()) }
-            assertHashEquals(expected, studentHash)
+        // Hole alt. lösungen
+        "Task 6" asGroup {
+            "lucene" asTest {
+                val expected = Hash.create(-19, -76, 55, -20, -49, -37, 85, -19, 67, 31, 98, 64, -4, -97, 50, -56, 9, 84, -47, 19, 87, 53, -59, 61, -64, -70, 94, -76, -108, 111, -86, -117)
+                val studentHash = pathToHandInExcel.readValueOf("6) VSM"){
+                    val toLoad = from(20,1).to(21, 1)
+                    val cells = toLoad.cellsNotNull
+                            .map { it.numericCellValue.toStringForEvalWithNDigits(5) }
+                            .toList()
+                    println(cells.joinToString())
+                    hash { updateWithStrings(cells) }
+                }.also { println(it.convertToArrayDeclaration()) }
+                assertHashEquals(expected, studentHash)
+            }
+
+            "alt_1" asTest {
+                val expected = Hash.create(29, 114, 102, -17, -112, 78, 126, -12, -56, -119, -34, 74, 97, 78, -72, 86, -30, 43, 45, -17, 37, 83, -107, 62, 0, 122, -56, 87, 127, 121, -123, 89)
+                val studentHash = pathToHandInExcel.readValueOf("6) VSM"){
+                    val toLoad = from(20,1).to(21, 1)
+                    val cells = toLoad.cellsNotNull
+                            .map { it.numericCellValue.toStringForEvalWithNDigits(5) }
+                            .toList()
+                    println(cells.joinToString())
+                    hash { updateWithStrings(cells) }
+                }.also { println(it.convertToArrayDeclaration()) }
+                assertHashEquals(expected, studentHash)
+            }
+
+            "alt_2" asTest {
+                val expected = Hash.create(29, 114, 102, -17, -112, 78, 126, -12, -56, -119, -34, 74, 97, 78, -72, 86, -30, 43, 45, -17, 37, 83, -107, 62, 0, 122, -56, 87, 127, 121, -123, 89)
+                val studentHash = pathToHandInExcel.readValueOf("6) VSM"){
+                    val toLoad = from(20,1).to(21, 1)
+                    val cells = toLoad.cellsNotNull
+                            .map { it.numericCellValue.toStringForEvalWithNDigits(5) }
+                            .toList()
+                    println(cells.joinToString())
+                    hash { updateWithStrings(cells) }
+                }.also { println(it.convertToArrayDeclaration()) }
+                assertHashEquals(expected, studentHash)
+            }
+
         }
         
         val results = mapOf(
