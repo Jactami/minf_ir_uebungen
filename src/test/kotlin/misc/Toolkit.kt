@@ -6,6 +6,7 @@ import toolkit.Hash
 import toolkit.SheetAccess
 import toolkit.useAsExcel
 import java.io.File
+import java.util.*
 
 @Suppress("NOTHING_TO_INLINE")
 inline fun assertHashEquals(expected: Hash, actual: Hash) =
@@ -32,4 +33,4 @@ fun <T> File.readValueOf(taskName: String, hashReader: SheetAccess.() -> T) =
         }
 
 
-fun Double.toStringForEvalWithNDigits(n: Int) = String.format("%.${n}f", this)
+fun Double.toStringForEvalWithNDigits(n: Int) = "%.${n}f".format(Locale.GERMAN, this)
