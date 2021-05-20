@@ -16,7 +16,7 @@ class TestsFor1 {
     // The path where you store your anfrageX.json files
     val pathToHandIn: File =  File("./docker/task1/ES_Angabe")
 
-    // Set true to
+    // Set true to reset the index
     val resetIndex: Boolean = false
 
     // Configure your elasic search information, usually the data bellow

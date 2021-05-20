@@ -49,6 +49,7 @@ class ESIndexSession(
      */
     val indexUrl = baseUrl/indexName
 
+    // Helper function
     private val HttpResponse.successful get() = status.value in 200..299
 
     /**
@@ -188,9 +189,7 @@ class ESIndexSession(
         } finally {
             pit.delete()
         }
-
     }
-
 
     override fun close() {
         client.close()
