@@ -1,4 +1,4 @@
-package exercise1
+package exercise1.task7
 
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
@@ -8,16 +8,19 @@ import toolkit.update
 import java.io.File
 import java.security.MessageDigest
 
-fun readResult(resultFile: File) =
-        Json.decodeFromString(Result.serializer(), resultFile.readText())
-
 @Serializable
 data class Result(
         val took: Int,
         @SerialName("timed_out") val timedOut: Boolean,
         @SerialName("_shards") val shards: Shards,
         val hits: Hits,
+        @SerialName("pit_id") val pitId: String? = null
 ) : Hashable {
+
+    companion object {
+        fun fromJson(file: File) = Json.decodeFromString(serializer(), file.readText())
+    }
+
     override fun MessageDigest.update() {
         update(hits)
     }
@@ -33,13 +36,13 @@ data class Shards(
 
 @Serializable
 data class Hits(
-    val total: Total,
-    @SerialName("max_score") val maxScore: Float?,
-    val hits: List<Hit>,
+        val total: Total,
+        @SerialName("max_score") val maxScore: Float?,
+        val hits: List<Hit>,
 ) : Hashable {
     override fun MessageDigest.update() {
         update(total)
-        hits.forEach { update(it) }
+        hits.sortedBy { it.id }.forEach { update(it) }
     }
 }
 
@@ -61,9 +64,39 @@ data class Hit(
         @SerialName("_id") val id: String,
         @SerialName("_score") val score: Float,
         @SerialName("_source") val source: ShakespeareEntry,
+        val sort: IntArray? = null,
 ) : Hashable {
     override fun MessageDigest.update() {
         update(source)
+    }
+
+    override fun equals(other: Any?): Boolean {
+        if (this === other) return true
+        if (javaClass != other?.javaClass) return false
+
+        other as Hit
+
+        if (index != other.index) return false
+        if (type != other.type) return false
+        if (id != other.id) return false
+        if (score != other.score) return false
+        if (source != other.source) return false
+        if (sort != null) {
+            if (other.sort == null) return false
+            if (!sort.contentEquals(other.sort)) return false
+        } else if (other.sort != null) return false
+
+        return true
+    }
+
+    override fun hashCode(): Int {
+        var result = index.hashCode()
+        result = 31 * result + type.hashCode()
+        result = 31 * result + id.hashCode()
+        result = 31 * result + score.hashCode()
+        result = 31 * result + source.hashCode()
+        result = 31 * result + (sort?.contentHashCode() ?: 0)
+        return result
     }
 }
 

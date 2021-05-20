@@ -5,7 +5,8 @@ import java.nio.charset.Charset
 import java.security.MessageDigest
 import java.util.*
 
-inline class Hash(val value: ByteArray) {
+@JvmInline
+value class Hash(val value: ByteArray) {
     constructor(value: String) : this(Base64.getDecoder().decode(value))
     override fun toString(): String = Base64.getEncoder().encodeToString(value)
     fun convertToArrayDeclaration(): String = value.joinToString(", ", "Hash.create(", ")")
@@ -13,7 +14,6 @@ inline class Hash(val value: ByteArray) {
     companion object {
         fun create(vararg values: Byte) = Hash(values)
     }
-
 }
 
 @Suppress("NOTHING_TO_INLINE")

@@ -1,18 +1,71 @@
 package task1
 
-import exercise1.readResult
+import exercise1.task7.ESIndexSession
+import kotlinx.coroutines.*
 import misc.*
-import org.junit.jupiter.api.DisplayName
-import org.junit.jupiter.api.TestFactory
-import org.junit.jupiter.api.fail
+import org.junit.jupiter.api.*
 import toolkit.*
 import java.io.File
 
 @DisplayName("Tests for 1")
 class TestsFor1 {
-    val pathToHandInExcel: File get() = File("D:\\NextCloud\\IR\\Übungen\\2021_SS\\Solutions\\1\\Solution_1_Handout.xlsm")
-    val pathToHandIn: File get() =  File("./docker/task1/ES_Angabe")
 
+    // The path to your excel, this is a getter-function to ensure that you can run tests even without the file.
+    val pathToHandInExcel: File get() = TODO("Path to your solution.xlsx")
+
+    // The path where you store your anfrageX.json files
+    val pathToHandIn: File =  File("./docker/task1/ES_Angabe")
+
+    // Set true to
+    val resetIndex: Boolean = false
+
+    // Configure your elasic search information, usually the data bellow
+    val indexName: String = "shakespeare"
+    val host: String = "localhost"
+    val port: UShort = 9200u
+
+    // The session used for this unit tests
+    private val esSession = ESIndexSession(indexName, host, port)
+
+    init {
+        try {
+            runBlocking {
+                val alreadyExists = esSession.exists()
+
+                if (resetIndex || !alreadyExists){
+                    if (resetIndex && alreadyExists){
+                        println("The index already exists, delete it for reset.")
+                        esSession.delete()
+                    }
+                    print("Start creating the index... ")
+                    esSession.create(
+                            File("./docker/task1/ES_Angabe/mapping.json"),
+                            File("./docker/task1/ES_Angabe/shakespeare.json")
+                    )
+                    println("DONE")
+                }
+            }
+        } catch (e: java.net.ConnectException){
+            // Ignore it if it's not running but warn.
+            System.err.println("ERROR: Your elastic search is not running on: ${esSession.baseUrl}")
+        }
+
+
+        try {
+            require(pathToHandInExcel.isFile){
+                "The path ${pathToHandInExcel.canonicalPath} does not point to a file."
+            }
+            require(pathToHandInExcel.extension in listOf("xlsx", "xlsm")){
+                "The path ${pathToHandInExcel.canonicalPath} does not point to a .xlsx or .xlsm file."
+            }
+        } catch (e: NotImplementedError){
+            // Ignore that, only fail early when something is awry
+        }
+
+        require(pathToHandIn.isDirectory){
+            "The path ${pathToHandIn.canonicalPath} does to point to a folder."
+        }
+    }
 
     @TestFactory
     @DisplayName("Abgabe 1")
@@ -126,19 +179,22 @@ class TestsFor1 {
 
         }
         
-        val results = mapOf(
-                "ergebnis1" to Hash.create(18, -95, 39, -9, 101, -74, 90, 49, -119, -108, -5, -29, -97, -54, 13, -34, 113, 76, -73, -21, 101, -88, -79, -107, 77, -53, -100, 34, -120, -44, -72, -62),
-                "ergebnis2" to Hash.create(-40, 65, -124, 48, -9, 8, -116, -118, -23, 111, -94, 127, -86, 66, 65, -112, 13, 67, -17, 108, 104, -18, -83, 87, -93, -103, 44, 115, -74, -92, 66, -90),
-                "ergebnis3" to Hash.create(-53, -46, 57, -43, 79, 108, 57, 85, 32, -119, -61, 69, -83, 99, 71, -7, 11, 34, 15, -100, -48, 115, 58, 38, 78, 47, 66, -83, -66, 12, 18, -76),
-                "ergebnis4" to Hash.create(-85, 48, 72, 40, 97, -107, 35, 0, 2, -108, -94, -36, 48, -18, -59, 82, 90, 24, 28, -29, 118, 19, 109, -3, 125, -28, -19, -101, 14, -42, 113, -64),
-                "ergebnis5" to Hash.create(-18, -74, -89, -5, -56, -72, -7, -73, 30, 107, -106, -119, -99, -59, 67, -40, -3, 71, 13, -11, -12, 12, 18, -114, -46, -51, -38, 127, -120, -64, 66, 115),
-        )
+
 
         "Task 7" asGroup {
-            pathToHandIn.walkTopDown().filter { println(it); it.extension == "json" && "ergebnis" in it.nameWithoutExtension }.forEach { file ->
+            val results = mapOf(
+                    "anfrage1" to Hash.create(43, 55, -14, -108, -16, -1, 38, 46, 79, 81, 94, 41, -55, -40, 125, 56, -81, -96, 71, 45, -4, 43, 56, -73, -65, -123, -63, 13, 63, -8, -68, -93),
+                    "anfrage2" to Hash.create(-25, 12, -20, -4, 37, -99, 10, -65, -88, -51, -61, -92, 4, 42, 111, -80, 94, -36, 123, -43, -99, -59, 42, -73, -85, 52, -43, -128, -106, -8, 78, -58),
+                    "anfrage3" to Hash.create(-53, -46, 57, -43, 79, 108, 57, 85, 32, -119, -61, 69, -83, 99, 71, -7, 11, 34, 15, -100, -48, 115, 58, 38, 78, 47, 66, -83, -66, 12, 18, -76),
+                    "anfrage4" to Hash.create(-100, 34, 100, -1, -49, -85, -96, 38, 103, 44, -20, 75, -20, -34, -1, -53, 22, 62, -120, 70, -60, 45, -103, 49, -19, 35, -9, 32, 52, -56, 16, -45),
+                    "anfrage5" to Hash.create(-99, 97, -116, -118, -104, -121, -53, -59, -15, -13, 95, 112, 74, -5, 37, 78, 57, 43, -25, 6, 76, 73, -109, -79, 104, 46, 77, -117, -88, -18, -66, -75),
+            )
+
+            pathToHandIn.walkTopDown().filter { it.extension == "json" && "anfrage" in it.nameWithoutExtension }.forEach { file ->
                 file.name asTest {
+                    assertDoesNotThrow({"Your elastic search is not running on: ${esSession.baseUrl}"}) { runBlocking { esSession.exists() } }
                     val expected = results.getValue(file.nameWithoutExtension)
-                    val student = hash { update(readResult(file)) }.also { println(it.convertToArrayDeclaration()) }
+                    val student = hash { update(runBlocking { esSession.query(file) }) }.also { println(it.convertToArrayDeclaration()) }
                     assertHashEquals(expected, student)
                 }
             }
