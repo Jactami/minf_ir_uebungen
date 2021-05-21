@@ -1,3 +1,5 @@
+@file:Suppress("unused", "FunctionName")
+
 package toolkit
 
 import java.nio.ByteBuffer
@@ -6,13 +8,19 @@ import java.security.MessageDigest
 import java.util.*
 
 @JvmInline
-value class Hash(val value: ByteArray) {
+value class Hash(val value: ByteArray): Hashable {
     constructor(value: String) : this(Base64.getDecoder().decode(value))
-    override fun toString(): String = Base64.getEncoder().encodeToString(value)
-    fun convertToArrayDeclaration(): String = value.joinToString(", ", "Hash.create(", ")")
 
     companion object {
         fun create(vararg values: Byte) = Hash(values)
+    }
+
+    override fun toString(): String = Base64.getEncoder().encodeToString(value)
+
+    fun convertToArrayDeclaration(): String = value.joinToString(", ", "Hash.create(", ")")
+
+    override fun MessageDigest.update() {
+        update(value)
     }
 }
 
@@ -30,7 +38,7 @@ interface Hashable {
 fun hash(block: MessageDigest.() -> Unit) =
         MessageDigestSHA265().apply(block).digest().asHash()
 
-fun MessageDigestSHA265() = MessageDigest.getInstance("SHA-256")
+fun MessageDigestSHA265(): MessageDigest = MessageDigest.getInstance("SHA-256")
 
 fun MessageDigest.updateWithDoubles(values: Collection<Double>) {
     val buffer = ByteBuffer.allocate(Double.SIZE_BYTES*values.size)
