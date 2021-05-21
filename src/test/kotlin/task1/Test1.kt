@@ -1,3 +1,8 @@
+/*
+ * Copyright (c) 2021 Felix Engl
+ * Felix Engl licenses this file to you under the MIT license.
+ */
+
 package task1
 
 import exercise1.task7.ESIndexSession
