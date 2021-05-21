@@ -44,22 +44,25 @@ class Test2 {
         }
 
         "Task 2" asGroup {
+
             val cells =  pathToHandIn.readValueOf("2) BM25"){
                 val toLoad = from("B24").to("B26")
                 toLoad.cellsNotNull
                         .map { it.numericCellValue.toStringForEvalWithNDigits(5) }
                         .toList()
             }
-            println(cells)
+
             val student = hash { updateWithStrings(cells) }
 
             "Normal" asTest {
+                println(cells)
                 val expected = Hash.create(-71, 112, 127, -69, 58, 98, -59, -80, -69, -56, 53, -13, -125, 93, 32, -85, 120, 11, 72, -73, 50, -77, -4, 59, -79, 19, -120, -118, 82, 98, 90, 28)
                 println(student.convertToArrayDeclaration())
                 assertHashEquals(expected, student)
             }
 
             "Alternativ" asTest  {
+                println(cells)
                 val expected = Hash.create(-41, 105, -26, 105, 10, 107, 7, -99, -12, 49, -60, 82, -79, -58, -119, 109, -94, 116, 62, -120, -88, -8, -96, 79, -93, 18, -94, -48, -29, 30, -3, -88)
                 println(student.convertToArrayDeclaration())
                 assertHashEquals(expected, student)
@@ -197,6 +200,9 @@ class Test2 {
         }
     }
 
+
+    // Helper-Functions
+
     private fun Cell.valueForTask4() =
             when(cellType){
                 CellType.STRING -> {
@@ -206,7 +212,6 @@ class Test2 {
                 CellType.NUMERIC -> numericCellValue.toLong()
                 else -> error("A cell of type $cellType was not expected.")
             }
-    // Helper Funktionen
 
     private fun DynamicTestContainerDefinition.task1Group(
             name: String,
@@ -222,9 +227,8 @@ class Test2 {
                         .toList()
             }
 
-            println(cells)
-
             "without log" asTest {
+                println(cells)
                 val student = hash {
                     updateWithStrings(cells.map { it.toStringForEvalWithNDigits(10) })
                 }
@@ -233,6 +237,7 @@ class Test2 {
             }
 
             "with log" asTest {
+                println(cells)
                 val student = hash {
                     updateWithStrings(cells.map { it.toStringForEvalWithNDigits(5) })
                 }
