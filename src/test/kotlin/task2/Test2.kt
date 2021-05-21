@@ -14,7 +14,7 @@ import kotlin.test.assertNotNull
 
 
 class Test2 {
-    val pathToHandIn: File = File("D:\\NextCloud\\IR\\Übungen\\2021_SS\\Solutions\\2\\Solution_2_Handout.xlsx") //TODO("Pfad zur Abgabe xlsx/xslm.")
+    val pathToHandIn: File get() = TODO("Pfad zur Abgabe xlsx/xslm.")
 
 
     @TestFactory
