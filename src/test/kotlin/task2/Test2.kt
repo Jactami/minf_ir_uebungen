@@ -10,17 +10,19 @@ import org.apache.poi.ss.usermodel.Cell
 import org.apache.poi.ss.usermodel.CellType
 import org.junit.jupiter.api.DisplayName
 import org.junit.jupiter.api.TestFactory
-import toolkit.Hash
-import toolkit.hash
-import toolkit.update
-import toolkit.updateWithStrings
+import toolkit.*
 import java.io.File
 import kotlin.test.assertNotNull
 
 
 class Test2 {
-    val pathToHandIn: File get() = TODO("Pfad zur Abgabe xlsx/xslm.")
+    val pathToHandIn: File get() = File("D:\\NextCloud\\IR\\Übungen\\2021_SS\\Solutions\\2\\Solution_2_Handout.xlsx") //TODO("Pfad zur Abgabe xlsx/xslm.")
 
+    init {
+        require(pathToHandIn.isFile){
+            "The path ${pathToHandIn.canonicalPath} has to point to a file!"
+        }
+    }
 
     @TestFactory
     @DisplayName("Abgabe 2")
@@ -62,14 +64,14 @@ class Test2 {
             "Normal" asTest {
                 println(cells)
                 val expected = Hash.create(-71, 112, 127, -69, 58, 98, -59, -80, -69, -56, 53, -13, -125, 93, 32, -85, 120, 11, 72, -73, 50, -77, -4, 59, -79, 19, -120, -118, 82, 98, 90, 28)
-                println(student.convertToArrayDeclaration())
+                println(student.convertToHashDeclaration())
                 assertHashEquals(expected, student)
             }
 
             "Alternativ" asTest  {
                 println(cells)
                 val expected = Hash.create(-41, 105, -26, 105, 10, 107, 7, -99, -12, 49, -60, 82, -79, -58, -119, 109, -94, 116, 62, -120, -88, -8, -96, 79, -93, 18, -94, -48, -29, 30, -3, -88)
-                println(student.convertToArrayDeclaration())
+                println(student.convertToHashDeclaration())
                 assertHashEquals(expected, student)
             }
         }
@@ -85,7 +87,7 @@ class Test2 {
                     }
                     println(cells.joinToString())
                     val student = hash { update(cells) }
-                    println(student.convertToArrayDeclaration())
+                    println(student.convertToHashDeclaration())
                     assertHashEquals(expected, student)
                 }
 
@@ -98,7 +100,7 @@ class Test2 {
                     }
                     println(cells.joinToString())
                     val student = hash { update(cells) }
-                    println(student.convertToArrayDeclaration())
+                    println(student.convertToHashDeclaration())
                     assertHashEquals(expected, student)
                 }
             }
@@ -112,7 +114,7 @@ class Test2 {
                 }
                 println(cells.joinToString())
                 val student = hash { update(cells) }
-                println(student.convertToArrayDeclaration())
+                println(student.convertToHashDeclaration())
                 assertHashEquals(expected, student)
             }
 
@@ -126,7 +128,7 @@ class Test2 {
                     }
                     println(cells.joinToString())
                     val student = hash { update(cells) }
-                    println(student.convertToArrayDeclaration())
+                    println(student.convertToHashDeclaration())
                     assertHashEquals(expected, student)
                 }
                 "Dezimal" asTest {
@@ -140,7 +142,7 @@ class Test2 {
                     }
                     println(cell)
                     val student = hash { update(cell) }
-                    println(student.convertToArrayDeclaration())
+                    println(student.convertToHashDeclaration())
                     assertHashEquals(expected, student)
                 }
             }
@@ -156,7 +158,7 @@ class Test2 {
                 }
                 println(cells.joinToString())
                 val student = hash { updateWithStrings(cells) }
-                println(student.convertToArrayDeclaration())
+                println(student.convertToHashDeclaration())
                 assertHashEquals(expected, student)
             }
 
@@ -169,7 +171,7 @@ class Test2 {
                 }
                 println(cells.joinToString())
                 val student = hash { update(cells) }
-                println(student.convertToArrayDeclaration())
+                println(student.convertToHashDeclaration())
                 assertHashEquals(expected, student)
             }
 
@@ -182,7 +184,7 @@ class Test2 {
                 }
                 println(cells.joinToString())
                 val student = hash { update(cells) }
-                println(student.convertToArrayDeclaration())
+                println(student.convertToHashDeclaration())
                 assertHashEquals(expected, student)
             }
 
@@ -195,18 +197,74 @@ class Test2 {
                 }
                 println(cells.joinToString())
                 val student = hash { updateWithStrings(cells) }
-                println(student.convertToArrayDeclaration())
+                println(student.convertToHashDeclaration())
                 assertHashEquals(expected, student)
             }
         }
 
         "Task 6" asGroup {
+            "Initialisierung" asTest {
+                runTestFor6("B2", "G2", Hash.create(-28, 123, -103, 39, -39, 40, -84, -127, 64, -6, -112, -78, 88, -28, -64, 110, 49, 67, -15, -81, 70, 73, 27, -118, -124, 73, -55, 54, 31, -24, -55, -110))
+            }
+            "Iteration 1" asTest {
+                runTestFor6("B3", "G3", Hash.create(-82, 17, 77, -119, -3, -70, 105, -72, 126, -128, -101, -60, -4, -109, 102, -5, -59, -92, -8, -69, 10, 100, -35, 14, -73, -12, -32, -103, 53, -97, 34, 120))
+            }
+            "Iteration 10" asTest {
+                runTestFor6("B12", "G12", Hash.create(98, 1, 13, 14, -41, -64, -11, -48, -81, 28, 48, -3, -66, 126, 117, -123, -26, -101, 89, -100, -110, -30, 97, -109, -79, -12, 3, -121, -46, -91, -77, -62))
+            }
 
+            "Iteration 50" asTest {
+                runTestFor6("B52", "G52", Hash.create(95, 46, 23, -15, 29, 38, 26, -41, 6, 105, -89, -120, -73, -57, 94, -105, -17, -55, -62, -1, -25, 62, 46, -64, 41, 74, -100, 78, 92, -53, 75, -2))
+            }
+
+            "Iteration 70" asTest {
+                runTestFor6("B72", "G72", Hash.create(-16, 55, 101, -123, -71, 125, -42, 6, -120, -117, -78, -82, -28, 95, 50, 44, -71, 85, -92, 28, -17, 69, -37, 45, -122, 78, 83, 113, -40, -6, 120, 78))
+            }
+
+            "Iteration 80" asTest {
+                runTestFor6("B82", "G82", Hash.create(-22, 86, -38, -95, 8, 31, -49, -65, -3, -99, -34, -42, 27, -66, 75, -53, -70, 33, -14, -12, 61, 31, -9, 109, 94, 68, -126, 21, 21, -13, 29, -85))
+            }
+
+            "IO-Tabelle" asTest {
+                runTestFor6IO("M5", "R10", Hash.create(38, -45, -19, -90, 80, 63, 40, -29, -27, -92, -24, 2, 48, -1, -90, 50, 46, -86, 30, 32, -57, -16, -77, -55, -106, -54, 89, 7, 20, 68, -26, 3))
+            }
+
+            "IO-Tabelle Ausgehend" asTest {
+                runTestFor6IO("M11", "R11", Hash.create(29, 116, -28, -31, -115, -52, -11, -32, -89, 93, 80, -56, -122, 15, -72, 89, -40, -76, 47, -70, 7, 90, -31, -114, -120, -103, 46, -72, 73, -38, -26, -10))
+            }
+
+            "IO-Tabelle Eingehend" asTest {
+                runTestFor6IO("S5", "S10", Hash.create(104, -116, -68, 45, -55, -76, -120, 12, -37, 91, 3, -100, 19, -67, 109, 127, -110, -62, -97, -27, 73, 89, 16, -2, -47, -99, -73, -32, -122, 44, -49, 107))
+            }
         }
     }
 
 
     // Helper-Functions
+
+    private fun runTestFor6(a: String, b: String, expected: Hash) {
+        val cells = pathToHandIn.readValueOf("6) PageRank"){
+            from(a).to(b).cellsNotNull
+                    .map { it.numericCellValue.toStringForEvalWithNDigits(5) }
+                    .toList()
+        }
+        println(cells.joinToString())
+        val student = hash { updateWithStrings(cells) }
+        println(student.convertToHashDeclaration())
+        assertHashEquals(expected, student)
+    }
+
+    private fun runTestFor6IO(a: String, b: String, expected: Hash) {
+        val cells = pathToHandIn.readValueOf("6) PageRank"){
+            from(a).to(b).cellsNotNull
+                    .map { it.numericCellValue.toInt() }
+                    .toList()
+        }
+        println(cells.joinToString())
+        val student = hash { update(cells) }
+        println(student.convertToHashDeclaration())
+        assertHashEquals(expected, student)
+    }
 
     private fun Cell.valueForTask4() =
             when(cellType){
@@ -237,7 +295,7 @@ class Test2 {
                 val student = hash {
                     updateWithStrings(cells.map { it.toStringForEvalWithNDigits(10) })
                 }
-                println(student.convertToArrayDeclaration())
+                println(student.convertToHashDeclaration())
                 assertHashEquals(hashNormal, student)
             }
 
@@ -246,7 +304,7 @@ class Test2 {
                 val student = hash {
                     updateWithStrings(cells.map { it.toStringForEvalWithNDigits(5) })
                 }
-                println(student.convertToArrayDeclaration())
+                println(student.convertToHashDeclaration())
                 assertHashEquals(hashLog, student)
             }
         }

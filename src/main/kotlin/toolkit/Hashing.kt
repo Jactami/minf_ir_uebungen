@@ -22,7 +22,7 @@ value class Hash(val value: ByteArray): Hashable {
 
     override fun toString(): String = Base64.getEncoder().encodeToString(value)
 
-    fun convertToArrayDeclaration(): String = value.joinToString(", ", "Hash.create(", ")")
+    fun convertToHashDeclaration(): String = value.joinToString(", ", "Hash.create(", ")")
 
     override fun MessageDigest.update() {
         update(value)

@@ -34,7 +34,7 @@ inline fun <reified T> Triple<T, T, T>.toArray(): Array<T> = arrayOf(first, seco
 
 fun <T> File.readValueOf(taskName: String, hashReader: SheetAccess.() -> T) =
         useAsExcel(this){
-            taskName{ hashReader() }
+            taskName { hashReader() }
         }
 
 

@@ -85,7 +85,7 @@ class TestsFor1 {
                         .toList()
                 println(cells.joinToString())
                 hash { updateWithStrings(cells) }
-            }.also { println(it.convertToArrayDeclaration()) }
+            }.also { println(it.convertToHashDeclaration()) }
             assertHashEquals(expected, studentHash)
         }
 
@@ -99,7 +99,7 @@ class TestsFor1 {
                             .toList()
                     println(cells.joinToString())
                     hash { updateWithStrings(cells) }
-                }.also { println(it.convertToArrayDeclaration()) }
+                }.also { println(it.convertToHashDeclaration()) }
                 assertHashEquals(expected, studentHash)
             }
 
@@ -112,7 +112,7 @@ class TestsFor1 {
                             .toList()
                     println(callsString.joinToString())
                     hash { updateWithStrings(callsString) }
-                }.also { println(it.convertToArrayDeclaration()) }
+                }.also { println(it.convertToHashDeclaration()) }
                 assertHashEquals(expected, studentHash)
             }
         }
@@ -126,7 +126,7 @@ class TestsFor1 {
                         .toList()
                 println(cells.joinToString())
                 hash { updateWithStrings(cells) }
-            }.also { println(it.convertToArrayDeclaration()) }
+            }.also { println(it.convertToHashDeclaration()) }
             assertHashEquals(expected, studentHash)
         }
 
@@ -137,7 +137,7 @@ class TestsFor1 {
                 val cell = toLoad.cell?.numericCellValue?.toStringForEvalWithNDigits(5) ?: fail { "The value at $toLoad was not found." }
                 println(cell)
                 hash { update(cell) }
-            }.also { println(it.convertToArrayDeclaration()) }
+            }.also { println(it.convertToHashDeclaration()) }
             assertHashEquals(expected, studentHash)
         }
 
@@ -152,7 +152,7 @@ class TestsFor1 {
                             .toList()
                     println(cells.joinToString())
                     hash { updateWithStrings(cells) }
-                }.also { println(it.convertToArrayDeclaration()) }
+                }.also { println(it.convertToHashDeclaration()) }
                 assertHashEquals(expected, studentHash)
             }
 
@@ -165,7 +165,7 @@ class TestsFor1 {
                             .toList()
                     println(cells.joinToString())
                     hash { updateWithStrings(cells) }
-                }.also { println(it.convertToArrayDeclaration()) }
+                }.also { println(it.convertToHashDeclaration()) }
                 assertHashEquals(expected, studentHash)
             }
 
@@ -178,7 +178,7 @@ class TestsFor1 {
                             .toList()
                     println(cells.joinToString())
                     hash { updateWithStrings(cells) }
-                }.also { println(it.convertToArrayDeclaration()) }
+                }.also { println(it.convertToHashDeclaration()) }
                 assertHashEquals(expected, studentHash)
             }
 
@@ -199,7 +199,7 @@ class TestsFor1 {
                 file.name asTest {
                     assertDoesNotThrow({"Your elastic search is not running on: ${esSession.baseUrl}"}) { runBlocking { esSession.exists() } }
                     val expected = results.getValue(file.nameWithoutExtension)
-                    val student = hash { update(runBlocking { esSession.query(file) }) }.also { println(it.convertToArrayDeclaration()) }
+                    val student = hash { update(runBlocking { esSession.query(file) }) }.also { println(it.convertToHashDeclaration()) }
                     assertHashEquals(expected, student)
                 }
             }
