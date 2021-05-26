@@ -19,9 +19,7 @@ import kotlin.test.assertNotNull
 
 class Test2 {
 
-    val config = File("./cfg/test2.json").loadConfigOrFail{
-        Test2Config("TODO: Pfad zur Abgabe xlsx/xslm.")
-    }
+    val config = File("./cfg/test2.json").loadConfigOrFail(::Test2Config)
 
     val pathToHandIn: File = File(config.pathToHandIn)
 

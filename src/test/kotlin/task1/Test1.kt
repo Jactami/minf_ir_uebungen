@@ -15,9 +15,7 @@ import java.io.File
 @DisplayName("Tests for 1")
 class TestsFor1 {
 
-    val config = File("./cfg/test1.json").loadConfigOrFail {
-        Test1Config("TODO: Pfad zur Abgabe xlsx/xslm.")
-    }
+    val config = File("./cfg/test1.json").loadConfigOrFail(::Test1Config)
 
     // The path to your excel, this is a getter-function to ensure that you can run tests even without the file.
     val pathToHandInExcel: File = File(config.pathToHandInExcel)

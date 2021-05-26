@@ -14,7 +14,7 @@ import java.io.File
 
 @Serializable
 data class Test1Config(
-        val pathToHandInExcel: String,
+        val pathToHandInExcel: String = "TODO: Pfad zur Abgabe xlsx/xslm.",
         // The path where you store your anfrageX.json files
         val pathToHandIn: String ="./docker/task1/ES_Angabe",
         // Set true to reset the index
@@ -27,7 +27,7 @@ data class Test1Config(
 
 @Serializable
 data class Test2Config(
-        val pathToHandIn: String
+        val pathToHandIn: String = "TODO: Pfad zur Abgabe xlsx/xslm."
 )
 
 
