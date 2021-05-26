@@ -15,19 +15,23 @@ import java.io.File
 @DisplayName("Tests for 1")
 class TestsFor1 {
 
+    val config = File("./cfg/test1.json").loadConfigOrFail {
+        Test1Config("TODO: Pfad zur Abgabe xlsx/xslm.")
+    }
+
     // The path to your excel, this is a getter-function to ensure that you can run tests even without the file.
-    val pathToHandInExcel: File get() = TODO("Path to your solution.xlsx")
+    val pathToHandInExcel: File = File(config.pathToHandInExcel)
 
     // The path where you store your anfrageX.json files
-    val pathToHandIn: File =  File("./docker/task1/ES_Angabe")
+    val pathToHandIn: File =  File(config.pathToHandIn)
 
     // Set true to reset the index
-    val resetIndex: Boolean = false
+    val resetIndex: Boolean = config.resetIndex
 
     // Configure your elasic search information, usually the data bellow
-    val indexName: String = "shakespeare"
-    val host: String = "localhost"
-    val port: UShort = 9200u
+    val indexName: String = config.indexName
+    val host: String = config.host
+    val port: UShort = config.port
 
     // The session used for this unit tests
     private val esSession = ESIndexSession(indexName, host, port)

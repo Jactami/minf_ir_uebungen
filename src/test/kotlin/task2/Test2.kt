@@ -15,8 +15,15 @@ import java.io.File
 import kotlin.test.assertNotNull
 
 
+
+
 class Test2 {
-    val pathToHandIn: File get() = File("D:\\NextCloud\\IR\\Übungen\\2021_SS\\Solutions\\2\\Solution_2_Handout.xlsx") //TODO("Pfad zur Abgabe xlsx/xslm.")
+
+    val config = File("./cfg/test2.json").loadConfigOrFail{
+        Test2Config("TODO: Pfad zur Abgabe xlsx/xslm.")
+    }
+
+    val pathToHandIn: File = File(config.pathToHandIn)
 
     init {
         require(pathToHandIn.isFile){

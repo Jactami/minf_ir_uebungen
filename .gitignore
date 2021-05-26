@@ -1,6 +1,8 @@
 
 docker/task1/ES_Angabe/ergebnis*
 
+cfg/*.json
+
 # Created by https://www.gitignore.io/api/java,gradle,kotlin,intellij
 # Edit at https://www.gitignore.io/?templates=java,gradle,kotlin,intellij
 
