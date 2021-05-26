@@ -5,7 +5,6 @@
 
 package misc
 
-import org.apache.poi.ss.util.CellAddress
 import org.junit.jupiter.api.Assertions
 import toolkit.Hash
 import toolkit.SheetAccess
@@ -38,4 +37,6 @@ fun <T> File.readValueOf(taskName: String, hashReader: SheetAccess.() -> T) =
         }
 
 
-fun Double.toStringForEvalWithNDigits(n: Int) = "%.${n}f".format(Locale.GERMAN, this)
+fun Double.toStringForEvalWithNDigits(n: Int) = "%.${n}f".format(Locale.GERMAN, this).also {
+    println("Round to the $n-th digit. ($this -> $it)");
+}
