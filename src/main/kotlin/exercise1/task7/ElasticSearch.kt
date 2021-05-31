@@ -84,7 +84,7 @@ class ESIndexSession(
 
         return client.put<HttpResponse>(indexUrl).successful &&
                 client.put<HttpResponse>(indexUrl/"_mapping"){
-                    contentType(ContentType.Application.Json)
+                    contentType(ContentType.parse("application/x-ndjson"))
                     body = mapping.readText()
                 }.successful &&
                 client.put<HttpResponse>(indexUrl/"_bulk"){

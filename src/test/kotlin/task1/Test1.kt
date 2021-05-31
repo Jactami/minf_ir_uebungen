@@ -46,8 +46,8 @@ class TestsFor1 {
                     }
                     print("Start creating the index... ")
                     esSession.create(
-                            File("./docker/task1/ES_Angabe/mapping.json"),
-                            File("./docker/task1/ES_Angabe/shakespeare.json")
+                            File(config.pathToHandIn, "mapping.json"),
+                            File(config.pathToHandIn, "shakespeare_6.0.json")
                     )
                     println("DONE")
                 }
