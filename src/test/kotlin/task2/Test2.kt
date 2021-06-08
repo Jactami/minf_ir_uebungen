@@ -84,7 +84,7 @@ class Test2 {
         "Task 4" asGroup {
             "Part a)" asGroup {
                 "Dezimal" asTest {
-                    val expected = Hash.create(58, 105, 15, -92, 91, 104, -6, -117, -10, -38, 121, -14, 109, -72, 9, -67, 6, -96, 123, 26, -100, 34, -50, 115, 20, 123, -34, -101, -1, 115, -113, -80)
+                    val expected = Hash.create(32, 73, 12, 54, 95, 1, -108, 53, 45, 120, -30, -83, -49, 105, -100, 47, 23, 95, 26, -35, -101, 121, 83, 66, 95, 93, -18, -75, -56, 68, -2, -64)
                     val cells = pathToHandIn.readValueOf("4) Kodierung"){
                         from("I6").to("L11").cellsNotNull
                                 .map { it.valueForTask4() }
@@ -97,7 +97,7 @@ class Test2 {
                 }
 
                 "Binär" asTest {
-                    val expected = Hash.create(-26, -37, 14, -24, -120, -49, -48, -18, 83, -28, -67, 94, -51, -123, -72, 9, -83, -83, 62, 99, 22, -4, -75, -107, 76, 77, -44, -39, 45, -6, -3, 29)
+                    val expected = Hash.create(-27, 52, 23, 18, -14, -27, 102, 74, 106, 126, -11, 36, 63, 19, -36, -72, -109, -78, 56, 105, -47, 54, 107, -84, -27, -102, -99, -98, 57, 5, 83, 30)
                     val cells = pathToHandIn.readValueOf("4) Kodierung"){
                         from("N6").to("Q11").cellsNotNull
                                 .map { it.valueForTask4() }
@@ -111,7 +111,7 @@ class Test2 {
             }
 
             "Part b)" asTest {
-                val expected = Hash.create(103, -86, 17, -127, -21, 17, 10, -102, 76, -97, -124, -43, 108, 86, -97, -53, -73, -86, -42, 94, 43, 30, 109, 0, 9, 23, 40, 109, 101, -127, -44, -128)
+                val expected = Hash.create(-107, -65, 60, -113, -37, 126, 39, -5, 36, -125, 62, 61, -26, -101, -54, -28, -120, -89, -4, -39, -51, -66, -3, -91, 74, -101, 32, -41, 70, 68, -33, 122)
                 val cells = pathToHandIn.readValueOf("4) Kodierung"){
                     from("B16").to("D16").cellsNotNull
                             .map { it.numericCellValue.toLong() }
@@ -158,7 +158,7 @@ class Test2 {
                 val expected = Hash.create(-6, 77, -107, -47, -56, -126, -17, -28, 14, 102, -126, 74, 90, -21, 62, -103, 36, -84, 43, -92, 86, -99, 70, -69, 71, 100, -17, -95, 28, -70, 98, -16)
                 val cells = pathToHandIn.readValueOf("5) TAAT"){
                     from("F14").to("J18").cellsNotNull
-                            .map { it.stringCellValue }
+                            .map { it.stringCellValue.lowercase() }
                             .toList()
                 }
                 println(cells.joinToString())
@@ -194,10 +194,10 @@ class Test2 {
             }
 
             "Stabil" asTest {
-                val expected = Hash.create(-4, 39, 38, 78, 51, 92, 78, 127, -73, 5, -104, -103, -128, -34, -109, -53, -4, 101, 55, -45, -26, 61, -116, 127, 49, 49, 88, 99, -128, -110, 92, -19)
+                val expected = Hash.create(37, 27, -90, -64, 27, 13, 98, -13, 4, 102, 96, -78, 56, -40, 39, -51, -35, 55, 39, 85, 22, 25, -6, -50, -11, -63, 112, -118, -55, 97, 17, -76)
                 val cells = pathToHandIn.readValueOf("5) TAAT"){
                     from("Q14").to("Q18").cellsNotNull
-                            .map { it.stringCellValue }
+                            .map { it.stringCellValue.lowercase() }
                             .toList()
                 }
                 println(cells.joinToString())

@@ -110,7 +110,7 @@ class TestsFor1 {
                 val studentHash = pathToHandInExcel.readValueOf("3) NDCG"){
                     val toLoad = from(43,2).to(43, 8)
                     val callsString = toLoad.cellsNotNull
-                            .map { it.stringCellValue }
+                            .map { it.stringCellValue.lowercase() }
                             .toList()
                     println(callsString.joinToString())
                     hash { updateWithStrings(callsString) }
