@@ -106,7 +106,7 @@ class TestsFor1 {
             }
 
             "Evaluation" asTest {
-                val expected = Hash.create(-32, 49, 23, -49, 23, -5, 62, 5, -10, 47, -31, -80, 109, -46, -110, 15, -68, 108, -11, -109, -54, 6, -2, -93, 88, -16, 3, -98, -30, 52, -42, -96)
+                val expected = Hash.create(47, 56, 76, -126, 5, -99, 67, 2, 108, 90, 69, 1, -49, 68, -103, -96, 111, 16, 70, 125, -14, -100, -118, 95, -119, -74, -76, 120, -4, -57, -126, -64)
                 val studentHash = pathToHandInExcel.readValueOf("3) NDCG"){
                     val toLoad = from(43,2).to(43, 8)
                     val callsString = toLoad.cellsNotNull
