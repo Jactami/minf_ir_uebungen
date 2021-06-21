@@ -30,6 +30,11 @@ data class Test2Config(
         val pathToHandIn: String = "TODO: Pfad zur Abgabe xlsx/xslm."
 )
 
+@Serializable
+data class Test3Config(
+        val pathToHandIn: String = "TODO: Pfad zur Abgabe xlsx/xslm."
+)
+
 
 inline fun <reified T> File.loadConfigOrFail(default: () -> T): T =
         if (!exists()){
