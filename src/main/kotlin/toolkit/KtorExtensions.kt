@@ -7,4 +7,8 @@ package toolkit
 
 import io.ktor.http.*
 
-operator fun Url.div(pathElement: String) = copy(encodedPath = if(encodedPath.endsWith('/')) "$encodedPath$pathElement" else "$encodedPath/$pathElement")
+operator fun Url.div(pathElement: String) = URLBuilder(this).apply {
+    set {
+        encodedPath = if(encodedPath.endsWith('/')) "$encodedPath$pathElement" else "$encodedPath/$pathElement"
+    }
+}.build()

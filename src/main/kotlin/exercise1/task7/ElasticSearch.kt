@@ -6,12 +6,13 @@
 package exercise1.task7
 
 import io.ktor.client.*
+import io.ktor.client.call.*
 import io.ktor.client.engine.cio.*
-import io.ktor.client.features.json.*
-import io.ktor.client.features.json.serializer.*
+import io.ktor.client.plugins.contentnegotiation.*
 import io.ktor.client.request.*
 import io.ktor.client.statement.*
 import io.ktor.http.*
+import io.ktor.serialization.kotlinx.json.*
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.json.*
 import toolkit.div
@@ -32,27 +33,28 @@ class ESIndexSession(
     //client
     private val client = HttpClient(CIO) {
         expectSuccess = false
-        install(JsonFeature){
-            serializer = KotlinxSerializer()
+        install(ContentNegotiation){
+            json()
         }
     }
 
     /**
      * The url without the index-name
      */
-    val baseUrl = Url(
-            URLBuilder(
-                    URLProtocol("http", 9200),
-                    host,
-                    port.toInt(),
-                    encodedPath = "/"
-            )
-    )
+    val baseUrl = URLBuilder(
+        URLProtocol("http", 9200),
+        host,
+        port.toInt(),
+    ).apply {
+        set {
+            encodedPath = "/"
+        }
+    }.build()
 
     /**
      * The urls of the index
      */
-    val indexUrl = baseUrl/indexName
+    val indexUrl = baseUrl / indexName
 
     // Helper function
     private val HttpResponse.successful get() = status.value in 200..299
@@ -61,13 +63,13 @@ class ESIndexSession(
      * Check if the index exists
      */
     suspend fun exists() =
-            client.head<HttpResponse>(indexUrl).successful
+            client.head(indexUrl).successful
 
     /**
      * Delete the index
      */
     suspend fun delete() =
-            client.delete<HttpResponse>(indexUrl).successful
+            client.delete(indexUrl).successful
 
     /**
      * Create the index
@@ -82,14 +84,14 @@ class ESIndexSession(
             "${data.canonicalPath} has to be a file."
         }
 
-        return client.put<HttpResponse>(indexUrl).successful &&
-                client.put<HttpResponse>(indexUrl/"_mapping"){
+        return client.put(indexUrl).successful &&
+                client.put(indexUrl/"_mapping"){
                     contentType(ContentType.parse("application/x-ndjson"))
-                    body = mapping.readText()
+                    setBody(mapping.readText())
                 }.successful &&
-                client.put<HttpResponse>(indexUrl/"_bulk"){
+                client.put(indexUrl/"_bulk"){
                     contentType(ContentType.parse("application/x-ndjson"))
-                    body = data.readBytes()
+                    setBody(data.readBytes())
                 }.successful
     }
 
@@ -115,8 +117,8 @@ class ESIndexSession(
         }
         return client.get(indexUrl/"_search"){
             contentType(ContentType.Application.Json)
-            body = modifiedQuery
-        }
+            setBody(modifiedQuery)
+        }.body()
     }
 
     /**
@@ -133,17 +135,17 @@ class ESIndexSession(
      * Create a pit
      */
     private suspend fun createPit(duration: String) =
-            client.post<Pit>(indexUrl/"_pit"){
+            client.post(indexUrl/"_pit"){
                 parameter("keep_alive", duration)
-            }
+            }.body<Pit>()
 
     /**
      * Delete a pit
      */
     private suspend fun Pit.delete() =
-            client.delete<HttpResponse>(baseUrl/"_pit"){
+            client.delete(baseUrl/"_pit"){
                 contentType(ContentType.Application.Json)
-                body = this@delete
+                setBody(this@delete)
             }.successful
 
     /**
@@ -158,42 +160,42 @@ class ESIndexSession(
 
         TODO("This function is not finished, neets the resume concept.")
 
-        val pit = createPit("1m")
-        return try {
-            val modifiedQuery = query.jsonObject.toMutableMap().let { bodyAsMutableMap ->
-                if ("size" !in bodyAsMutableMap){
-                    bodyAsMutableMap["size"] = JsonPrimitive(50)
-                }
-                if ("pit" !in bodyAsMutableMap){
-                    bodyAsMutableMap["pit"] = buildJsonObject {
-                        put("id", pit.id)
-                        put("keep_alive", "1m")
-                    }
-                }
-                if("sort" !in bodyAsMutableMap){
-                    bodyAsMutableMap["sort"] = buildJsonArray {
-                        add(
-                                buildJsonObject {
-                                    put("_shard_doc", "desc")
-                                }
-                        )
-                    }
-                }
-                JsonObject(bodyAsMutableMap)
-            }
-            println(modifiedQuery.toString())
-            client.get<HttpResponse>(indexUrl/"_search"){
-                contentType(ContentType.Application.Json)
-                body = modifiedQuery
-            }.also { println(it.readText()) }
-
-            client.get(indexUrl/"_search"){
-                contentType(ContentType.Application.Json)
-                body = modifiedQuery
-            }
-        } finally {
-            pit.delete()
-        }
+//        val pit = createPit("1m")
+//        return try {
+//            val modifiedQuery = query.jsonObject.toMutableMap().let { bodyAsMutableMap ->
+//                if ("size" !in bodyAsMutableMap){
+//                    bodyAsMutableMap["size"] = JsonPrimitive(50)
+//                }
+//                if ("pit" !in bodyAsMutableMap){
+//                    bodyAsMutableMap["pit"] = buildJsonObject {
+//                        put("id", pit.id)
+//                        put("keep_alive", "1m")
+//                    }
+//                }
+//                if("sort" !in bodyAsMutableMap){
+//                    bodyAsMutableMap["sort"] = buildJsonArray {
+//                        add(
+//                                buildJsonObject {
+//                                    put("_shard_doc", "desc")
+//                                }
+//                        )
+//                    }
+//                }
+//                JsonObject(bodyAsMutableMap)
+//            }
+//            println(modifiedQuery.toString())
+//            client.get<HttpResponse>(indexUrl/"_search"){
+//                contentType(ContentType.Application.Json)
+//                body = modifiedQuery
+//            }.also { println(it.readText()) }
+//
+//            client.get(indexUrl/"_search"){
+//                contentType(ContentType.Application.Json)
+//                body = modifiedQuery
+//            }
+//        } finally {
+//            pit.delete()
+//        }
     }
 
     override fun close() {

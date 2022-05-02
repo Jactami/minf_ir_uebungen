@@ -36,9 +36,11 @@ data class Test3Config(
 )
 
 
+val json = Json { prettyPrint = true; encodeDefaults = true }
+
 inline fun <reified T> File.loadConfigOrFail(default: () -> T): T =
         if (!exists()){
             createNewFile()
-            writeText(Json{ prettyPrint=true; encodeDefaults = true }.encodeToString(default()))
+            writeText(json.encodeToString(default()))
             error("Please enter the correct path at ${canonicalPath}!")
         } else Json.decodeFromString(readText())
