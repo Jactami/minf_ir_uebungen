@@ -13,6 +13,10 @@ import toolkit.hash
 import toolkit.updateWithStrings
 import java.io.File
 
+/**
+ * Für das 3te Übungsblatt. 
+ */
+
 class Test3 {
     val config = File("./cfg/test3.json").loadConfigOrFail(::Test3Config)
 
