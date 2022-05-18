@@ -12,6 +12,10 @@ import org.junit.jupiter.api.*
 import toolkit.*
 import java.io.File
 
+/**
+ * Für das 1te Übungsblatt. 
+ */
+
 @DisplayName("Tests for 1")
 class TestsFor1 {
 
