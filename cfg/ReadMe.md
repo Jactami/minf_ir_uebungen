@@ -1,7 +1,7 @@
 # How2Config
 1. Erstelle eine File textX.json (X = Task Nummer)
 2. Fülle die entsprechenden Daten auf:
-   1. Task1.json
+   1. test1.json
 ````json
 {
   "pathToHandInExcel": "<Pfad zur Excel File>",
@@ -15,13 +15,13 @@
   "port": 9200,
 }
 ````
-   2. Task2.json
+   2. test2.json
 ````json
 {
   "pathToHandInExcel": "<Pfad zur Excel File>"
 }
 ````
-   3. Task3.json
+   3. test3.json
 ````json
 {
   "pathToHandInExcel": "<Pfad zur Excel File>"
