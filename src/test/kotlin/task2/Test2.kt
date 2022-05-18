@@ -15,8 +15,9 @@ import java.io.File
 import kotlin.test.assertNotNull
 
 
-
-
+/**
+ * Für das 2te Übungsblatt. 
+ */
 class Test2 {
 
     val config = File("./cfg/test2.json").loadConfigOrFail(::Test2Config)
