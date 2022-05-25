@@ -148,8 +148,8 @@ class TestsFor1 {
         }
 
         // Hole alt. lösungen
-        "Task 6" asGroup {
-            "lucene" asTest {
+        "Task 6 (Min. 1 von 3 sollte positiv sein.)" asGroup {
+            "Lucene (Bester Weg)" asTest {
                 val expected = Hash.create(-51, 42, -41, 93, 83, -65, -52, 30, 47, 69, 62, -53, -62, -3, -31, 47, -67, 66, 9, -30, 7, -108, 84, -29, -25, -34, 81, 22, -62, 110, -76, 53)
                 val studentHash = pathToHandInExcel.readValueOf("6) VSM"){
                     val toLoad = from(20,1).to(21, 1)
@@ -162,7 +162,7 @@ class TestsFor1 {
                 assertHashEquals(expected, studentHash)
             }
 
-            "alt_1" asTest {
+            "Alternative 1" asTest {
                 val expected = Hash.create(-120, -41, 45, -48, -58, 6, -23, 34, -93, 22, 25, -22, 67, 70, 63, 121, -106, 24, 91, -110, 25, 98, 69, 2, 52, -79, 54, -55, 4, -70, 1, 45)
                 val studentHash = pathToHandInExcel.readValueOf("6) VSM"){
                     val toLoad = from(20,1).to(21, 1)
@@ -175,7 +175,7 @@ class TestsFor1 {
                 assertHashEquals(expected, studentHash)
             }
 
-            "alt_2" asTest {
+            "Alternative 2" asTest {
                 val expected = Hash.create(-120, -41, 45, -48, -58, 6, -23, 34, -93, 22, 25, -22, 67, 70, 63, 121, -106, 24, 91, -110, 25, 98, 69, 2, 52, -79, 54, -55, 4, -70, 1, 45)
                 val studentHash = pathToHandInExcel.readValueOf("6) VSM"){
                     val toLoad = from(20,1).to(21, 1)
@@ -187,7 +187,6 @@ class TestsFor1 {
                 }.also { println(it.convertToHashDeclaration()) }
                 assertHashEquals(expected, studentHash)
             }
-
         }
         
 
