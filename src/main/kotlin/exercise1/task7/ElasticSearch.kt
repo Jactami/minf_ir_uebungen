@@ -28,7 +28,7 @@ class ESIndexSession(
         indexName: String,
         host: String = "localhost",
         port: UShort = 9200u,
-): Closeable {
+): AutoCloseable {
 
     //client
     private val client = HttpClient(CIO) {
