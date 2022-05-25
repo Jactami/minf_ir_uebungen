@@ -12,13 +12,12 @@ import io.ktor.client.plugins.contentnegotiation.*
 import io.ktor.client.request.*
 import io.ktor.http.*
 import io.ktor.serialization.kotlinx.json.*
-import kotlinx.coroutines.runBlocking
-import kotlinx.serialization.KSerializer
-import kotlinx.serialization.SerialName
-import kotlinx.serialization.encodeToString
+import kotlinx.serialization.*
 import kotlinx.serialization.json.*
-import kotlinx.serialization.modules.SerializersModule
 import java.io.Closeable
+import java.nio.file.Path
+import kotlin.io.path.readText
+import kotlin.reflect.full.findAnnotation
 
 class SolrSession(
     host: String = "localhost",
@@ -73,15 +72,48 @@ class SolrSession(
     suspend fun fieldAction(command: FieldCommands) {
         val url = URLBuilder(solrUrlBase).appendPathSegments("schema").build()
         client.post(url){
-            setBody(command)
+            setBody(command.serializeToJsonWithCommandName())
         }
     }
 
     suspend fun getCopyFields(name: CollectionName): CopyFieldCollection {
-        val url = URLBuilder(solrUrlBase).appendPathSegments("schema", "copyfields").build()
+        val url = URLBuilder(solrUrlBase).appendPathSegments(name.value, "schema", "copyfields").build()
         return client.get(url){
             parameter("wt", "json")
-        }.body<CopyFieldCollection>()
+        }.body()
+    }
+
+    suspend fun clearCopyFields(name: CollectionName) {
+        val copyFields = getCopyFields(name)
+        val url = URLBuilder(solrUrlBase).appendPathSegments(name.value, "schema").build()
+        copyFields.forEach { copyField ->
+            val rule = Json.encodeToJsonElement(copyField)
+            client.post(url){
+                setBody(buildJsonObject {
+                    put("delete-copy-field", rule)
+                })
+            }
+        }
+    }
+
+    suspend fun addCopyField(name: CollectionName, copyField: CopyField) {
+        val url = URLBuilder(solrUrlBase).appendPathSegments(name.value, "schema").build()
+
+        client.post(url){
+            setBody(buildJsonObject {
+                put("add-copy-field", Json.encodeToJsonElement(copyField))
+            })
+        }
+    }
+
+    suspend fun uploadData(name: CollectionName, path: Path) {
+        val url = URLBuilder(solrUrlBase).appendPathSegments(name.value, "upload").build()
+        client.post(url) {
+            parameter("commit", "true")
+            setBody(
+                path.readText()
+            )
+        }
     }
 
     override fun close() {
@@ -89,71 +121,103 @@ class SolrSession(
     }
 }
 
-@kotlinx.serialization.Serializable
+enum class SolrFieldType(val typeName: String){
+    TextField("text_general"),
+    DoubleField("pdouble"),
+    IntField("pint"),
+    StringField("string"),
+}
+
+@Serializable
 @JvmInline
 value class CollectionName(val value: String)
 
-@kotlinx.serialization.Serializable
+@Serializable
 @JvmInline
 value class FieldName(val name: String)
 
-@kotlinx.serialization.Serializable
+@Serializable
 data class ResponseHeader(
     val status: Int,
     @SerialName("QTime") val qTime: Int
 )
 
-@kotlinx.serialization.Serializable
+@Serializable
 data class CopyFieldCollection(val copyFields: List<CopyField>): List<CopyField> by copyFields
 
-@kotlinx.serialization.Serializable
+@Serializable
 data class CopyField(
     val source: String,
     @SerialName("dest") val destination: String,
-    val maxChars: Int? = null
-) {
-    fun toRule() = CopyFieldRule(source, destination)
-}
-
-@kotlinx.serialization.Serializable
-data class CopyFieldRule(
-    val source: String,
-    @SerialName("dest") val destination: String
+    @EncodeDefault(EncodeDefault.Mode.NEVER) val maxChars: Int? = null
 )
 
-@kotlinx.serialization.Serializable
+@Serializable
 sealed class FieldCommands {
 
-    abstract class FieldCommandsActionSerializer<T: FieldCommands>(serializer: KSerializer<T>, val commandName: String):
-        JsonTransformingSerializer<T>(serializer){
-        override fun transformSerialize(element: JsonElement): JsonElement =
-            JsonObject(
-                buildMap {
-                    put(commandName, element)
-                }
-            )
-    }
+    @Target(AnnotationTarget.CLASS)
+    @Retention(AnnotationRetention.RUNTIME)
+    @SerialInfo
+    annotation class CommandName(val name: String)
 
-    object DeleteJson : FieldCommandsActionSerializer<Delete>(Delete.serializer(), "delete-field")
-    object AddJson : FieldCommandsActionSerializer<Add>(Add.serializer(), "add-field")
-
-    companion object {
-        val module = SerializersModule {
-            contextual(Delete::class, DeleteJson)
-            contextual(Add::class, AddJson)
-        }
-    }
-
-
-    @kotlinx.serialization.Serializable
+    @Serializable
+    @CommandName("delete-field")
     class Delete(val name: FieldName): FieldCommands()
 
-    @kotlinx.serialization.Serializable
-    class Add(val name: FieldName, val type: String, val stored: Boolean, val indexed: Boolean, val multiValued: Boolean): FieldCommands()
+
+
+    @Serializable
+    @CommandName("add-field")
+    class Add(
+        val name: FieldName,
+        val type: String,
+        val stored: Boolean,
+        val indexed: Boolean,
+        val multiValued: Boolean,
+        val docValues: Boolean
+    ): FieldCommands() {
+        constructor(
+            name: FieldName,
+            type: SolrFieldType,
+            stored: Boolean,
+            indexed: Boolean,
+            multiValued: Boolean,
+            docValues: Boolean
+        ): this(
+            name,
+            type.typeName,
+            stored,
+            indexed,
+            multiValued,
+            docValues
+        )
+
+        companion object {
+            fun primitive(name: FieldName, type: SolrFieldType) =
+                Add(name, type, true, true, false, type == SolrFieldType.StringField)
+
+            fun keyword(name: FieldName) =
+                Add(name, SolrFieldType.StringField, true, true, true, true)
+        }
+    }
 }
 
+//TODO: Ugly hack, needs better solution.
+fun FieldCommands.serializeToJsonWithCommandName(): JsonElement =
+    buildJsonObject {
+        val kClass = this@serializeToJsonWithCommandName::class
+        val commandName = checkNotNull(kClass.findAnnotation<FieldCommands.CommandName>()){
+                "The field of $kClass needs a CommandName!"
+            }
 
-
+        val ser = Json.encodeToJsonElement(this@serializeToJsonWithCommandName)
+        put(commandName.name, buildJsonObject {
+            ser.jsonObject.entries.forEach {
+                if (it.key == "type") return@forEach
+                put(it.key, it.value)
+            }
+        })
+    }
 
 fun main() {
 //    runBlocking {
@@ -161,6 +225,4 @@ fun main() {
 //            println(solr.checkHealth())
 //        }
 //    }
-//
-    println(Json { prettyPrint=true; serializersModule=FieldCommands.module }.encodeToString(FieldCommands.Delete(FieldName("bla"))))
 }
