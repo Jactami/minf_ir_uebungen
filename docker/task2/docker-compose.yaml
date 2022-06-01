@@ -1,0 +1,48 @@
+version: "3.9"
+services:
+  zookeeper:
+    image: zookeeper:latest
+    container_name: zoo1
+    hostname: zoo1
+    environment:
+      ZOO_4LW_COMMANDS_WHITELIST: mntr, conf, ruok
+    ports: 
+      - 2181:2128
+    networks:
+      - solr-zoo
+  hoppscotch:
+    image: "hoppscotch/hoppscotch:latest"
+    ports:
+      - "3000:3000"
+    networks:
+      - solr-rest
+  solr:
+    image: "solr:latest"
+    depends_on:
+      - zookeeper
+    ports:
+     - "8983:8983"
+    volumes:
+      - data:/var/solr
+    hostname: "solr-ir"
+    container_name: "solr-ir"
+    networks:
+      - solr-rest
+      - solr-zoo
+    # command:
+    #   - solr-precreate
+    #   - gettingstarted
+    environment:
+      # - SOLR_HOST=solr-ir
+      - ZK_HOST=zoo1:2181
+
+volumes:
+  data:
+networks:
+  solr-rest:
+    driver: bridge
+    name: solr-rest
+  solr-zoo:
+    driver: bridge
+    name: solr-zoo
+  
