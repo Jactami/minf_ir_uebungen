@@ -5,6 +5,7 @@
 
 package task2
 
+import de.fengl.ktestfactories.DynamicTestGroup
 import misc.*
 import org.apache.poi.ss.usermodel.Cell
 import org.apache.poi.ss.usermodel.CellType
@@ -18,41 +19,103 @@ import kotlin.test.assertNotNull
 /**
  * Für das 2te Übungsblatt. 
  */
-class Test2 {
+class Test2 : de.fengl.ktestfactories.KTestFactory(
+    {
+        val config = File("./cfg/test2.json").loadConfigOrFail(::Test2Config)
 
-    val config = File("./cfg/test2.json").loadConfigOrFail(::Test2Config)
-
-    val pathToHandIn: File = File(config.pathToHandIn)
-
-    init {
+        val pathToHandIn = File(config.pathToHandInExcel)
         require(pathToHandIn.isFile){
             "The path ${pathToHandIn.canonicalPath} has to point to a file!"
         }
-    }
 
-    @TestFactory
-    @DisplayName("Abgabe 2")
-    fun tasks() = testFactoryDefinition {
+        fun runTestFor6(a: String, b: String, expected: Hash) {
+            val cells = pathToHandIn.readValueOf("6) PageRank"){
+                from(a).to(b).cellsNotNull
+                    .map { it.numericCellValue.toStringForEvalWithNDigits(5) }
+                    .toList()
+            }
+            println(cells.joinToString())
+            val student = hash { updateWithStrings(cells) }
+            println(student.convertToHashDeclaration())
+            assertHashEquals(expected, student)
+        }
+
+        fun runTestFor6IO(a: String, b: String, expected: Hash) {
+            val cells = pathToHandIn.readValueOf("6) PageRank"){
+                from(a).to(b).cellsNotNull
+                    .map { it.numericCellValue.toInt() }
+                    .toList()
+            }
+            println(cells.joinToString())
+            val student = hash { update(cells) }
+            println(student.convertToHashDeclaration())
+            assertHashEquals(expected, student)
+        }
+
+        fun Cell.valueForTask4() =
+            when(cellType){
+                CellType.STRING -> {
+                    if(stringCellValue.trim() == "-") -1
+                    else error("Value '$stringCellValue' not supported.")
+                }
+                CellType.NUMERIC -> numericCellValue.toLong()
+                else -> error("A cell of type $cellType was not expected.")
+            }
+
+        fun DynamicTestGroup.task1Group(
+            name: String,
+            a: String,
+            b: String,
+            hashNormal: Hash,
+            hashLog: Hash
+        ) {
+            name asGroup {
+                val cells = pathToHandIn.readValueOf("1) IR-Modelle"){
+                    from(a).to(b).cellsNotNull
+                        .map { it.numericCellValue }
+                        .toList()
+                }
+
+                "without log (10 digits)" asTest {
+                    println(cells)
+                    val student = hash {
+                        updateWithStrings(cells.map { it.toStringForEvalWithNDigits(10) })
+                    }
+                    println(student.convertToHashDeclaration())
+                    assertHashEquals(hashNormal, student)
+                }
+
+                "with log (5 digits)" asTest {
+                    println(cells)
+                    val student = hash {
+                        updateWithStrings(cells.map { it.toStringForEvalWithNDigits(5) })
+                    }
+                    println(student.convertToHashDeclaration())
+                    assertHashEquals(hashLog, student)
+                }
+            }
+        }
+
         "Task 1" asGroup {
             task1Group(
-                    "Maximum Likelihood",
-                    "B12", "C12",
-                    Hash.create(42, 51, -101, -8, 53, -19, -45, 72, 116, 94, 120, 19, 107, -58, -37, 30, -53, -78, 37, 9, 110, 80, 41, 10, -97, 82, 125, 3, 14, 3, -125, 2),
-                    Hash.create(-58, -97, -14, -33, 44, -63, 90, -81, -60, 69, 10, -62, 20, -51, 94, -3, -34, 127, 49, -117, -116, -28, 33, 9, 80, 19, 108, 116, -104, -123, 29, -44)
+                "Maximum Likelihood",
+                "B12", "C12",
+                Hash.create(-78, 111, -35, 42, -32, 74, 107, -109, -99, -111, -88, 83, 67, 119, -46, 53, -89, -95, 51, 45, -105, -102, 119, -126, 73, -122, 119, 50, -34, -114, -40, -123),
+                Hash.create(80, -120, -16, -87, -14, -117, -87, 34, 115, -32, -47, -28, 100, 101, -115, 2, 58, 67, 62, -89, 85, 61, 93, -37, 101, -120, 32, 126, -14, 65, 29, -81)
             )
 
             task1Group(
-                    "Jelinek Mercer",
-                    "B13", "C13",
-                    Hash.create(-16, 97, 78, 75, 28, -37, 43, -52, -17, -105, -116, -127, 79, -36, -10, 33, -56, -81, 40, 21, 81, -119, -114, 40, 40, 106, -66, -105, -123, -7, -111, 3),
-                    Hash.create(22, -107, 89, -110, -29, 114, 47, -48, 92, -52, 50, -123, -118, 35, -99, -6, 79, -20, 112, -127, 47, -36, -15, 49, -69, 9, 35, -10, 100, 126, -47, -40)
+                "Jelinek Mercer",
+                "B13", "C13",
+                Hash.create(31, -21, 81, -74, -59, -9, 47, 6, 10, 119, -38, -18, -110, 30, -88, 9, -39, 101, 25, -58, -106, -17, -38, 88, -119, 93, 113, 53, 115, -41, -83, -41),
+                Hash.create(-115, -106, -54, 98, -76, -91, -75, -112, -108, 40, 15, -108, 112, 30, -73, -30, -27, 40, 86, 106, -39, 114, 35, 16, 14, -40, -82, -24, 124, 19, -54, -57)
             )
 
             task1Group(
-                    "Dirichlet",
-                    "B14", "C14",
-                    Hash.create(-86, 103, -28, -56, 38, -86, 94, -12, -82, -23, 111, 17, 2, 120, -30, 90, 49, 103, 86, -6, -18, 85, 67, -22, 118, 122, -117, 63, 56, -120, -25, -17),
-                    Hash.create(-31, 10, -76, -43, -22, -36, -93, 14, 96, -46, 86, 126, 78, -81, 24, 83, -102, -83, -97, -49, -8, 99, 88, -4, 93, 74, -34, -107, 106, -6, -121, -31)
+                "Dirichlet",
+                "B14", "C14",
+                Hash.create(17, -45, 119, -116, 68, 41, -57, 67, 36, -102, -26, 67, 105, 90, 96, -82, -100, 121, -81, 99, -108, -30, 118, -76, 83, -8, 24, -52, -43, 122, 83, 47),
+                Hash.create(99, 5, 20, -7, -30, 10, -4, -49, -105, 88, 62, 71, 24, -91, 72, -108, 20, 49, 68, 124, -103, -60, -25, -21, 88, 31, 53, 104, -46, 126, -73, 50)
             )
         }
 
@@ -61,22 +124,22 @@ class Test2 {
             val cells =  pathToHandIn.readValueOf("2) BM25"){
                 val toLoad = from("B24").to("B26")
                 toLoad.cellsNotNull
-                        .map { it.numericCellValue.toStringForEvalWithNDigits(5) }
-                        .toList()
+                    .map { it.numericCellValue.toStringForEvalWithNDigits(5) }
+                    .toList()
             }
 
             val student = hash { updateWithStrings(cells) }
 
             "Normal" asTest {
                 println(cells)
-                val expected = Hash.create(-71, 112, 127, -69, 58, 98, -59, -80, -69, -56, 53, -13, -125, 93, 32, -85, 120, 11, 72, -73, 50, -77, -4, 59, -79, 19, -120, -118, 82, 98, 90, 28)
+                val expected = Hash.create(31, -119, 103, 100, 125, -119, 103, 11, 71, -9, 30, 12, 59, -105, -81, -96, -107, 5, 105, 34, -42, -73, -12, 17, -85, 63, 100, 109, -1, -61, 44, 104)
                 println(student.convertToHashDeclaration())
                 assertHashEquals(expected, student)
             }
 
-            "Alternativ" asTest  {
+            "Alternatives Ergebnis" asTest  {
                 println(cells)
-                val expected = Hash.create(-41, 105, -26, 105, 10, 107, 7, -99, -12, 49, -60, 82, -79, -58, -119, 109, -94, 116, 62, -120, -88, -8, -96, 79, -93, 18, -94, -48, -29, 30, -3, -88)
+                val expected = Hash.create(31, -119, 103, 100, 125, -119, 103, 11, 71, -9, 30, 12, 59, -105, -81, -96, -107, 5, 105, 34, -42, -73, -12, 17, -85, 63, 100, 109, -1, -61, 44, 104)
                 println(student.convertToHashDeclaration())
                 assertHashEquals(expected, student)
             }
@@ -85,11 +148,11 @@ class Test2 {
         "Task 4" asGroup {
             "Part a)" asGroup {
                 "Dezimal" asTest {
-                    val expected = Hash.create(32, 73, 12, 54, 95, 1, -108, 53, 45, 120, -30, -83, -49, 105, -100, 47, 23, 95, 26, -35, -101, 121, 83, 66, 95, 93, -18, -75, -56, 68, -2, -64)
+                    val expected = Hash.create(74, 119, -99, 20, -103, -51, -21, 62, 107, -109, 43, -55, 42, -116, -95, -34, -4, -32, 52, 15, -120, -61, -52, -66, 66, 20, -117, -75, 95, -92, 72, -67)
                     val cells = pathToHandIn.readValueOf("4) Kodierung"){
                         from("I6").to("L11").cellsNotNull
-                                .map { it.valueForTask4() }
-                                .toList()
+                            .map { it.valueForTask4() }
+                            .toList()
                     }
                     println(cells.joinToString())
                     val student = hash { update(cells) }
@@ -98,11 +161,11 @@ class Test2 {
                 }
 
                 "Binär" asTest {
-                    val expected = Hash.create(-27, 52, 23, 18, -14, -27, 102, 74, 106, 126, -11, 36, 63, 19, -36, -72, -109, -78, 56, 105, -47, 54, 107, -84, -27, -102, -99, -98, 57, 5, 83, 30)
+                    val expected = Hash.create(100, -64, 68, 70, 6, -105, 99, -66, 35, -55, 69, 43, 124, -8, -18, -51, -42, -87, -64, -66, -56, 57, -106, 123, 94, 101, -13, 57, -8, -62, -55, -124)
                     val cells = pathToHandIn.readValueOf("4) Kodierung"){
                         from("N6").to("Q11").cellsNotNull
-                                .map { it.valueForTask4() }
-                                .toList()
+                            .map { it.valueForTask4() }
+                            .toList()
                     }
                     println(cells.joinToString())
                     val student = hash { update(cells) }
@@ -112,11 +175,11 @@ class Test2 {
             }
 
             "Part b)" asTest {
-                val expected = Hash.create(-107, -65, 60, -113, -37, 126, 39, -5, 36, -125, 62, 61, -26, -101, -54, -28, -120, -89, -4, -39, -51, -66, -3, -91, 74, -101, 32, -41, 70, 68, -33, 122)
+                val expected = Hash.create(-35, 115, -86, 114, -10, -127, -66, -110, -127, 109, -2, -1, -123, -110, -26, 73, 41, 113, -10, -97, 13, -62, -10, 66, 113, -28, 10, -126, -88, 21, -77, -70)
                 val cells = pathToHandIn.readValueOf("4) Kodierung"){
                     from("B16").to("D16").cellsNotNull
-                            .map { it.numericCellValue.toLong() }
-                            .toList()
+                        .map { it.numericCellValue.toLong() }
+                        .toList()
                 }
                 println(cells.joinToString())
                 val student = hash { update(cells) }
@@ -126,11 +189,11 @@ class Test2 {
 
             "Part c)" asGroup  {
                 "Binär" asTest {
-                    val expected = Hash.create(-18, 122, 22, -69, 33, -119, 112, -85, 11, -61, -2, -69, -89, -56, -69, 75, 94, 84, -97, 103, -25, -104, -80, 42, 28, -82, -90, -114, 101, 110, 126, -81)
+                    val expected = Hash.create(65, -124, -13, -43, 116, 35, 11, -13, -13, 30, 117, 62, 5, -123, 40, -100, 19, -20, -22, -61, -122, 55, 38, -82, -23, 39, 7, -108, 20, 103, 59, 17)
                     val cells = pathToHandIn.readValueOf("4) Kodierung"){
                         from("N23").to("R23").cellsNotNull
-                                .map { it.numericCellValue.toLong() }
-                                .toList()
+                            .map { it.numericCellValue.toLong() }
+                            .toList()
                     }
                     println(cells.joinToString())
                     val student = hash { update(cells) }
@@ -138,7 +201,7 @@ class Test2 {
                     assertHashEquals(expected, student)
                 }
                 "Dezimal" asTest {
-                    val expected = Hash.create(4, -96, 94, 97, 82, 43, 31, -5, 11, -68, -64, 38, -58, -74, 26, -45, 0, 47, 32, 23, 121, -41, -77, -128, -7, -62, -34, 82, -40, 107, -28, -36)
+                    val expected = Hash.create(50, 1, -63, 1, -22, 102, 72, 88, -116, -101, 56, 68, -113, 69, 46, -32, -23, 90, -121, -54, -108, 116, -29, 6, -47, -23, 15, 34, 68, -124, -54, -12)
                     val cell = pathToHandIn.readValueOf("4) Kodierung"){
                         val cell = "S23".cell
                         assertNotNull(cell){
@@ -156,11 +219,11 @@ class Test2 {
 
         "Task 5" asGroup {
             "Document Ranking" asTest {
-                val expected = Hash.create(-6, 77, -107, -47, -56, -126, -17, -28, 14, 102, -126, 74, 90, -21, 62, -103, 36, -84, 43, -92, 86, -99, 70, -69, 71, 100, -17, -95, 28, -70, 98, -16)
+                val expected = Hash.create(-25, 89, -106, 15, -113, -76, 6, 44, -92, 121, -12, 72, 10, -17, 28, 64, -35, 100, -127, -127, 18, -46, 100, 58, 38, 50, 4, -26, -12, 42, -14, 28)
                 val cells = pathToHandIn.readValueOf("5) TAAT"){
                     from("F14").to("J18").cellsNotNull
-                            .map { it.stringCellValue.lowercase() }
-                            .toList()
+                        .map { it.stringCellValue.lowercase() }
+                        .toList()
                 }
                 println(cells.joinToString())
                 val student = hash { updateWithStrings(cells) }
@@ -169,11 +232,11 @@ class Test2 {
             }
 
             "Remaining" asTest {
-                val expected = Hash.create(-32, 126, -79, -94, 25, 32, -75, -100, -99, 21, -116, -36, 12, -46, -1, 100, -74, 106, 119, -104, -12, 41, 120, -54, -126, -110, -86, -10, -22, -20, 27, 16)
+                val expected = Hash.create(-68, -43, -95, 24, 38, 38, -82, 10, -89, -127, 84, 79, 71, -17, 5, 105, 77, -32, 99, 1, -106, -10, 120, 46, -47, 62, -76, 116, -51, -59, -64, 60)
                 val cells = pathToHandIn.readValueOf("5) TAAT"){
                     from("O14").to("O18").cellsNotNull
-                            .map { it.numericCellValue.toInt() }
-                            .toList()
+                        .map { it.numericCellValue.toInt() }
+                        .toList()
                 }
                 println(cells.joinToString())
                 val student = hash { update(cells) }
@@ -182,11 +245,11 @@ class Test2 {
             }
 
             "GAP" asTest {
-                val expected = Hash.create(-81, -68, 10, -45, 70, -60, -26, 20, -75, -5, 68, 37, -109, 113, 116, 41, 112, 26, -21, -62, 103, -41, -114, 86, 107, -16, -32, -107, -102, -124, -95, -85)
+                val expected = Hash.create(58, 104, 12, -72, -120, 91, 127, -63, 60, 83, -1, -52, 104, -32, -45, -35, 4, -36, -109, -55, -80, 116, 35, 81, 78, -72, 1, -28, -9, -3, -21, 123)
                 val cells = pathToHandIn.readValueOf("5) TAAT"){
                     from("P14").to("P18").cellsNotNull
-                            .map { it.numericCellValue.toInt() }
-                            .toList()
+                        .map { it.numericCellValue.toInt() }
+                        .toList()
                 }
                 println(cells.joinToString())
                 val student = hash { update(cells) }
@@ -198,8 +261,8 @@ class Test2 {
                 val expected = Hash.create(37, 27, -90, -64, 27, 13, 98, -13, 4, 102, 96, -78, 56, -40, 39, -51, -35, 55, 39, 85, 22, 25, -6, -50, -11, -63, 112, -118, -55, 97, 17, -76)
                 val cells = pathToHandIn.readValueOf("5) TAAT"){
                     from("Q14").to("Q18").cellsNotNull
-                            .map { it.stringCellValue.lowercase() }
-                            .toList()
+                        .map { it.stringCellValue.lowercase() }
+                        .toList()
                 }
                 println(cells.joinToString())
                 val student = hash { updateWithStrings(cells) }
@@ -209,111 +272,59 @@ class Test2 {
         }
 
         "Task 6" asGroup {
+
+            val solutions = object {
+                val init = Hash.create(-28, 123, -103, 39, -39, 40, -84, -127, 64, -6, -112, -78, 88, -28, -64, 110, 49, 67, -15, -81, 70, 73, 27, -118, -124, 73, -55, 54, 31, -24, -55, -110)
+                val iter1 = Hash.create(2, -82, -39, 85, 119, 37, 94, 62, -127, 1, -31, -94, -10, -126, -106, 6, 26, 88, -36, 66, -57, -62, -123, -92, 37, 47, -3, -90, -18, -32, 33, 21)
+                val iter10 = Hash.create(-60, -48, 62, 54, -74, 92, -76, -24, -121, -73, -65, -118, -91, 89, -92, 78, -56, 26, -122, -19, -12, 78, -114, 120, -96, 117, -51, 61, 127, -46, 69, 56)
+                val iter50 = Hash.create(32, -17, -117, -63, 51, -31, 102, 18, 126, 40, 73, -36, -6, -96, -54, -111, -2, -121, -60, 104, 55, 52, 60, 93, -109, 108, -40, 70, 11, -99, -121, -115)
+                val iter70 = Hash.create(0, -52, 7, -82, 85, -43, 65, 26, -119, -38, 69, 8, -20, -70, 107, 94, 20, -75, 95, 50, -38, -42, -57, 42, 96, 125, 92, -116, 46, 49, 63, 96)
+                val iter80 = Hash.create(46, 124, -117, 57, 52, 79, 21, 42, -70, -18, 98, 11, -51, -126, -127, 60, 5, -59, -57, -121, 126, -65, -18, 57, -95, -83, -112, 7, -69, -109, -112, -24)
+                val io = Hash.create(-75, 31, 75, 31, 51, 80, -37, -110, -91, 18, -84, 34, 88, 86, 98, -94, 23, 98, -116, -3, -78, -58, -124, 33, 11, 111, -114, -15, -38, -26, -117, 95)
+                val ioa = Hash.create(-93, -101, 54, 52, -44, 56, 111, -13, -76, -48, 17, 96, 60, -27, 82, 103, -92, -117, -90, -90, 86, -30, 99, -29, -67, -101, -115, -108, -72, 81, -25, 8)
+                val ioi = Hash.create(-22, -37, 83, -120, 90, -31, 62, 20, 28, 55, -23, -10, 0, -61, -38, -1, 89, -6, 103, 112, -29, 105, -26, -21, -126, -77, -84, -123, 69, -34, -26, 18)
+            }
+
             "Initialisierung" asTest {
-                runTestFor6("B2", "G2", Hash.create(-28, 123, -103, 39, -39, 40, -84, -127, 64, -6, -112, -78, 88, -28, -64, 110, 49, 67, -15, -81, 70, 73, 27, -118, -124, 73, -55, 54, 31, -24, -55, -110))
+                runTestFor6("B2", "G2", solutions.init)
             }
             "Iteration 1" asTest {
-                runTestFor6("B3", "G3", Hash.create(-82, 17, 77, -119, -3, -70, 105, -72, 126, -128, -101, -60, -4, -109, 102, -5, -59, -92, -8, -69, 10, 100, -35, 14, -73, -12, -32, -103, 53, -97, 34, 120))
+                runTestFor6("B3", "G3", solutions.iter1)
             }
             "Iteration 10" asTest {
-                runTestFor6("B12", "G12", Hash.create(98, 1, 13, 14, -41, -64, -11, -48, -81, 28, 48, -3, -66, 126, 117, -123, -26, -101, 89, -100, -110, -30, 97, -109, -79, -12, 3, -121, -46, -91, -77, -62))
+                runTestFor6("B12", "G12", solutions.iter10)
             }
 
             "Iteration 50" asTest {
-                runTestFor6("B52", "G52", Hash.create(95, 46, 23, -15, 29, 38, 26, -41, 6, 105, -89, -120, -73, -57, 94, -105, -17, -55, -62, -1, -25, 62, 46, -64, 41, 74, -100, 78, 92, -53, 75, -2))
+                runTestFor6("B52", "G52", solutions.iter50)
             }
 
             "Iteration 70" asTest {
-                runTestFor6("B72", "G72", Hash.create(-16, 55, 101, -123, -71, 125, -42, 6, -120, -117, -78, -82, -28, 95, 50, 44, -71, 85, -92, 28, -17, 69, -37, 45, -122, 78, 83, 113, -40, -6, 120, 78))
+                runTestFor6("B72", "G72", solutions.iter70)
             }
 
             "Iteration 80" asTest {
-                runTestFor6("B82", "G82", Hash.create(-22, 86, -38, -95, 8, 31, -49, -65, -3, -99, -34, -42, 27, -66, 75, -53, -70, 33, -14, -12, 61, 31, -9, 109, 94, 68, -126, 21, 21, -13, 29, -85))
+                runTestFor6("B82", "G82", solutions.iter80)
             }
 
             "IO-Tabelle" asTest {
-                runTestFor6IO("M5", "R10", Hash.create(38, -45, -19, -90, 80, 63, 40, -29, -27, -92, -24, 2, 48, -1, -90, 50, 46, -86, 30, 32, -57, -16, -77, -55, -106, -54, 89, 7, 20, 68, -26, 3))
+                runTestFor6IO("M5", "R10", solutions.io)
             }
 
             "IO-Tabelle Ausgehend" asTest {
-                runTestFor6IO("M11", "R11", Hash.create(29, 116, -28, -31, -115, -52, -11, -32, -89, 93, 80, -56, -122, 15, -72, 89, -40, -76, 47, -70, 7, 90, -31, -114, -120, -103, 46, -72, 73, -38, -26, -10))
+                runTestFor6IO("M11", "R11", solutions.ioa)
             }
 
             "IO-Tabelle Eingehend" asTest {
-                runTestFor6IO("S5", "S10", Hash.create(104, -116, -68, 45, -55, -76, -120, 12, -37, 91, 3, -100, 19, -67, 109, 127, -110, -62, -97, -27, 73, 89, 16, -2, -47, -99, -73, -32, -122, 44, -49, 107))
+                runTestFor6IO("S5", "S10", solutions.ioi)
             }
         }
     }
+) {
 
 
-    // Helper-Functions
 
-    private fun runTestFor6(a: String, b: String, expected: Hash) {
-        val cells = pathToHandIn.readValueOf("6) PageRank"){
-            from(a).to(b).cellsNotNull
-                    .map { it.numericCellValue.toStringForEvalWithNDigits(5) }
-                    .toList()
-        }
-        println(cells.joinToString())
-        val student = hash { updateWithStrings(cells) }
-        println(student.convertToHashDeclaration())
-        assertHashEquals(expected, student)
-    }
 
-    private fun runTestFor6IO(a: String, b: String, expected: Hash) {
-        val cells = pathToHandIn.readValueOf("6) PageRank"){
-            from(a).to(b).cellsNotNull
-                    .map { it.numericCellValue.toInt() }
-                    .toList()
-        }
-        println(cells.joinToString())
-        val student = hash { update(cells) }
-        println(student.convertToHashDeclaration())
-        assertHashEquals(expected, student)
-    }
 
-    private fun Cell.valueForTask4() =
-            when(cellType){
-                CellType.STRING -> {
-                    if(stringCellValue.trim() == "-") -1
-                    else error("Value '$stringCellValue' not supported.")
-                }
-                CellType.NUMERIC -> numericCellValue.toLong()
-                else -> error("A cell of type $cellType was not expected.")
-            }
-
-    private fun DynamicTestContainerDefinition.task1Group(
-            name: String,
-            a: String,
-            b: String,
-            hashNormal: Hash,
-            hashLog: Hash
-    ) {
-        name asGroup {
-            val cells = pathToHandIn.readValueOf("1) IR-Modelle"){
-                from(a).to(b).cellsNotNull
-                        .map { it.numericCellValue }
-                        .toList()
-            }
-
-            "without log" asTest {
-                println(cells)
-                val student = hash {
-                    updateWithStrings(cells.map { it.toStringForEvalWithNDigits(10) })
-                }
-                println(student.convertToHashDeclaration())
-                assertHashEquals(hashNormal, student)
-            }
-
-            "with log" asTest {
-                println(cells)
-                val student = hash {
-                    updateWithStrings(cells.map { it.toStringForEvalWithNDigits(5) })
-                }
-                println(student.convertToHashDeclaration())
-                assertHashEquals(hashLog, student)
-            }
-        }
-    }
 
 }

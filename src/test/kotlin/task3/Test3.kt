@@ -20,7 +20,7 @@ import java.io.File
 class Test3 {
     val config = File("./cfg/test3.json").loadConfigOrFail(::Test3Config)
 
-    val pathToHandIn: File = File(config.pathToHandIn)
+    val pathToHandIn: File = File(config.pathToHandInExcel)
 
     init {
         require(pathToHandIn.isFile){

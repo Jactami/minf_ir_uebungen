@@ -12,9 +12,22 @@ version = "1.0-SNAPSHOT"
 
 repositories {
     mavenCentral()
+    maven {
+        url = uri("https://gitlab.rz.uni-bamberg.de/api/v4/projects/4336/packages/maven")
+        name = "MINF_private"
+        credentials(HttpHeaderCredentials::class){
+            name = "Deploy-Token"
+            value = "vny-6sgSpFPMRQHspKJ-"
+        }
+        authentication {
+            create<HttpHeaderAuthentication>("header")
+        }
+    }
 }
 
-val ktor_version = "2.0.1"
+val ktorVersion: String by project
+val kTestFactoriesVersion: String by project
+val jUnitJupiterVersion: String by project
 
 dependencies {
     //Stdlb
@@ -26,20 +39,21 @@ dependencies {
     implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.6.1")
 
     //ktor
-    implementation("io.ktor:ktor-client-core:$ktor_version")
-    implementation("io.ktor:ktor-client-cio:$ktor_version")
+    implementation("io.ktor:ktor-client-core:$ktorVersion")
+    implementation("io.ktor:ktor-client-cio:$ktorVersion")
 //    implementation("io.ktor:ktor-client-serialization:$ktor_version")
-    implementation("io.ktor:ktor-client-content-negotiation:$ktor_version")
-    implementation("io.ktor:ktor-serialization-kotlinx-json:$ktor_version")
+    implementation("io.ktor:ktor-client-content-negotiation:$ktorVersion")
+    implementation("io.ktor:ktor-serialization-kotlinx-json:$ktorVersion")
 
 
     // https://mvnrepository.com/artifact/org.apache.poi/poi
     implementation("org.apache.poi:poi-ooxml:5.2.2")
 
     // Unit tests
+    testImplementation("de.fengl.ktestfactories:ktestfactories:$kTestFactoriesVersion")
     testImplementation(kotlin("test-junit5"))
-    testImplementation("org.junit.jupiter:junit-jupiter-api:5.8.2")
-    testRuntimeOnly("org.junit.jupiter:junit-jupiter-engine:5.8.2")
+    testImplementation("org.junit.jupiter:junit-jupiter-params:$jUnitJupiterVersion")
+    testRuntimeOnly("org.junit.jupiter:junit-jupiter-engine:$jUnitJupiterVersion")
 }
 
 tasks.test {
