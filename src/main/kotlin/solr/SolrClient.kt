@@ -121,11 +121,11 @@ enum class SolrFieldType(val typeName: String){
 }
 
 
-fun main() {
-    runBlocking {
-        SolrSession().use { solr ->
-            println(solr.checkHealth())
-            solr.
-        }
-    }
-}
+//fun main() {
+//    runBlocking {
+//        SolrSession().use { solr ->
+//            println(solr.checkHealth())
+//            solr.
+//        }
+//    }
+//}
