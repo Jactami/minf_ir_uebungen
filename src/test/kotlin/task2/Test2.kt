@@ -70,25 +70,31 @@ class Test2 : de.fengl.ktestfactories.KTestFactory(
             hashLog: Hash
         ) {
             name asGroup {
-                val cells = pathToHandIn.readValueOf("1) IR-Modelle"){
+                val cellsNoLog = pathToHandIn.readValueOf("1) IR-Modelle"){
+                    from(a).to(b).cellsNotNull
+                        .map { it.numericCellValue }
+                        .toList()
+                }
+
+                val cellsWithLog = pathToHandIn.readValueOf("1) IR-Modelle Log"){
                     from(a).to(b).cellsNotNull
                         .map { it.numericCellValue }
                         .toList()
                 }
 
                 "without log (10 digits)" asTest {
-                    println(cells)
+                    println(cellsNoLog)
                     val student = hash {
-                        updateWithStrings(cells.map { it.toStringForEvalWithNDigits(10) })
+                        updateWithStrings(cellsNoLog.map { it.toStringForEvalWithNDigits(10) })
                     }
                     println(student.convertToHashDeclaration())
                     assertHashEquals(hashNormal, student)
                 }
 
                 "with log (5 digits)" asTest {
-                    println(cells)
+                    println(cellsWithLog)
                     val student = hash {
-                        updateWithStrings(cells.map { it.toStringForEvalWithNDigits(5) })
+                        updateWithStrings(cellsWithLog.map { it.toStringForEvalWithNDigits(5) })
                     }
                     println(student.convertToHashDeclaration())
                     assertHashEquals(hashLog, student)
@@ -101,21 +107,21 @@ class Test2 : de.fengl.ktestfactories.KTestFactory(
                 "Maximum Likelihood",
                 "B12", "C12",
                 Hash.create(-78, 111, -35, 42, -32, 74, 107, -109, -99, -111, -88, 83, 67, 119, -46, 53, -89, -95, 51, 45, -105, -102, 119, -126, 73, -122, 119, 50, -34, -114, -40, -123),
-                Hash.create(80, -120, -16, -87, -14, -117, -87, 34, 115, -32, -47, -28, 100, 101, -115, 2, 58, 67, 62, -89, 85, 61, 93, -37, 101, -120, 32, 126, -14, 65, 29, -81)
+                Hash.create(-17, -47, -123, 50, -99, -128, -18, -127, -120, -35, 108, -20, 109, -32, -71, -107, 30, 50, 105, -116, 66, 6, -83, 124, 37, 111, -115, 60, 123, 98, 67, 124)
             )
 
             task1Group(
                 "Jelinek Mercer",
                 "B13", "C13",
                 Hash.create(31, -21, 81, -74, -59, -9, 47, 6, 10, 119, -38, -18, -110, 30, -88, 9, -39, 101, 25, -58, -106, -17, -38, 88, -119, 93, 113, 53, 115, -41, -83, -41),
-                Hash.create(-115, -106, -54, 98, -76, -91, -75, -112, -108, 40, 15, -108, 112, 30, -73, -30, -27, 40, 86, 106, -39, 114, 35, 16, 14, -40, -82, -24, 124, 19, -54, -57)
+                Hash.create(-102, 33, 8, -36, 83, -48, -27, -41, -7, -91, -38, -42, -108, -55, 22, 86, -49, 2, -102, 29, -81, 105, 18, -72, -66, 101, -76, 95, 31, -27, -109, 118)
             )
 
             task1Group(
                 "Dirichlet",
                 "B14", "C14",
                 Hash.create(17, -45, 119, -116, 68, 41, -57, 67, 36, -102, -26, 67, 105, 90, 96, -82, -100, 121, -81, 99, -108, -30, 118, -76, 83, -8, 24, -52, -43, 122, 83, 47),
-                Hash.create(99, 5, 20, -7, -30, 10, -4, -49, -105, 88, 62, 71, 24, -91, 72, -108, 20, 49, 68, 124, -103, -60, -25, -21, 88, 31, 53, 104, -46, 126, -73, 50)
+                Hash.create(35, 77, -115, -97, -120, 36, 103, 88, -17, 12, -68, -32, -3, -10, -68, -88, 21, -98, -21, -74, -109, -73, -115, 75, -91, -126, -73, -113, -74, -114, 36, 98)
             )
         }
 
