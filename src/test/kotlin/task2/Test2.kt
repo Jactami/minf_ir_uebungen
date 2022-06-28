@@ -76,7 +76,7 @@ class Test2 : de.fengl.ktestfactories.KTestFactory(
                         .toList()
                 }
 
-                val cellsWithLog = pathToHandIn.readValueOf("1) IR-Modelle Log"){
+                val cellsWithLog = pathToHandIn.readValueOf("1) IR-Modelle"){
                     from(a).to(b).cellsNotNull
                         .map { it.numericCellValue }
                         .toList()
@@ -134,6 +134,13 @@ class Test2 : de.fengl.ktestfactories.KTestFactory(
                     .toList()
             }
 
+            val cellsAlt =  pathToHandIn.readValueOf("2) BM25 alternativ"){
+                val toLoad = from("B24").to("B26")
+                toLoad.cellsNotNull
+                    .map { it.numericCellValue.toStringForEvalWithNDigits(5) }
+                    .toList()
+            }
+
             val student = hash { updateWithStrings(cells) }
 
             "Normal" asTest {
@@ -144,7 +151,7 @@ class Test2 : de.fengl.ktestfactories.KTestFactory(
             }
 
             "Alternatives Ergebnis" asTest  {
-                println(cells)
+                println(cellsAlt)
                 val expected = Hash.create(31, -119, 103, 100, 125, -119, 103, 11, 71, -9, 30, 12, 59, -105, -81, -96, -107, 5, 105, 34, -42, -73, -12, 17, -85, 63, 100, 109, -1, -61, 44, 104)
                 println(student.convertToHashDeclaration())
                 assertHashEquals(expected, student)
