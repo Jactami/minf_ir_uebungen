@@ -17,9 +17,17 @@ import io.ktor.serialization.kotlinx.json.*
 import kotlinx.coroutines.runBlocking
 import kotlinx.serialization.*
 import kotlinx.serialization.json.*
+import solr.toolkit.deserializeCommand
+import solr.toolkit.serializeCommand
 import java.io.Closeable
+import kotlin.io.path.Path
 import java.nio.file.Path
+import kotlin.io.path.inputStream
 import kotlin.io.path.readText
+
+val json = Json {
+    classDiscriminator = "commandType"
+}
 
 class SolrSession(
     host: String = "localhost",
@@ -37,7 +45,7 @@ class SolrSession(
         expectSuccess = false
         developmentMode = true
         install(ContentNegotiation){
-            json()
+            json(json)
         }
     }
 
@@ -74,7 +82,7 @@ class SolrSession(
     suspend fun fieldAction(command: FieldCommand) {
         val url = URLBuilder(solrUrlBase).appendPathSegments("schema").build()
         client.post(url){
-            setBody(command.toSolrCommandJson())
+            setBody(json.serializeCommand(command))
         }
     }
 
@@ -89,14 +97,14 @@ class SolrSession(
         val copyFields = getCopyFields(name)
         val url = URLBuilder(solrUrlBase).appendPathSegments(name.value, "schema").build()
         copyFields.forEach { copyField ->
-            client.post(url){ setBody(copyField.toDeleteSolrCommand()) }
+            client.post(url){ setBody(copyField) }
         }
     }
 
     suspend fun addCopyField(name: CollectionName, copyField: CopyField) {
         val url = URLBuilder(solrUrlBase).appendPathSegments(name.value, "schema").build()
         client.post(url){
-            setBody(copyField.toAddSolrCommand())
+            setBody(json.serializeCommand(copyField))
         }
     }
 
@@ -113,19 +121,63 @@ class SolrSession(
     }
 }
 
-enum class SolrFieldType(val typeName: String){
-    TextField("text_general"),
-    DoubleField("pdouble"),
-    IntField("pint"),
-    StringField("string"),
+enum class SolrFieldType(val typeName: String, val classType: String){
+    TextField("text_general", "solr.TextField"),
+    DoubleField("pdouble", "solr.DoublePointField"),
+    IntField("pint", "solr.IntPointField"),
+    StringField("string", "solr.StrField"),
 }
 
 
-//fun main() {
-//    runBlocking {
-//        SolrSession().use { solr ->
-//            println(solr.checkHealth())
-//            solr.
-//        }
-//    }
-//}
+@ExperimentalStdlibApi
+fun main() {
+    val regex = Regex("""\d+,\d+,\d+,\d+,.*""")
+    var docCount = 0
+    Path("C:\\Users\\Felix Engl\\Downloads\\expanded_posts_backed.csv").inputStream().bufferedReader().use {
+        while(docCount < 50){
+            val line = it.readLine()
+            if (regex.matchesAt(line, 0)){
+                docCount++
+            }
+            println(line)
+        }
+    }
+
+
+//    val elem = json.serializeCommand<FieldCommand>(
+//        FieldCommand.add(
+//            FieldName("text"),
+//            SolrFieldType.TextField.typeName,
+//            stored = true,
+//            indexed = true,
+//            multiValued = false,
+//            docValues = true
+//        )
+//    )
+//
+//    println(elem)
+//
+//    println(
+//        json.deserializeCommand<FieldCommand>(elem)
+//    )
+
+    return
+    runBlocking {
+        SolrSession().use { solr ->
+            println(solr.checkHealth())
+            solr.createCollection(
+                CollectionName("supertoll")
+            )
+            solr.fieldAction(
+                FieldCommand.add(
+                    FieldName("text"),
+                    SolrFieldType.TextField.typeName,
+                    stored = true,
+                    indexed = true,
+                    multiValued = false,
+                    docValues = true
+                )
+            )
+        }
+    }
+}
