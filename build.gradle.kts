@@ -28,6 +28,9 @@ repositories {
 val ktorVersion: String by project
 val kTestFactoriesVersion: String by project
 val jUnitJupiterVersion: String by project
+val apacheCommonsCSVVersion: String by project
+val poiVersion: String by project
+val solrVersion: String by project
 
 dependencies {
     //Stdlb
@@ -36,7 +39,7 @@ dependencies {
 
     // Kotlin Libs
     implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.3.3")
-    implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.6.1")
+    implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.6.2")
 
     //ktor
     implementation("io.ktor:ktor-client-core:$ktorVersion")
@@ -47,8 +50,10 @@ dependencies {
 
 
     // https://mvnrepository.com/artifact/org.apache.poi/poi
-    implementation("org.apache.poi:poi-ooxml:5.2.2")
-
+    implementation("org.apache.poi:poi-ooxml:$poiVersion")
+    implementation("org.apache.solr:solr-solrj:$solrVersion")
+// https://mvnrepository.com/artifact/org.apache.commons/commons-csv
+    implementation("org.apache.commons:commons-csv:${apacheCommonsCSVVersion}")
     // Unit tests
     testImplementation("de.fengl.ktestfactories:ktestfactories:$kTestFactoriesVersion")
     testImplementation(kotlin("test-junit5"))
