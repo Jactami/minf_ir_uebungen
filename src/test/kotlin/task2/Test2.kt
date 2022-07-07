@@ -6,11 +6,10 @@
 package task2
 
 import de.fengl.ktestfactories.DynamicTestGroup
+import de.fengl.ktestfactories.KTestDisplayNames
 import misc.*
 import org.apache.poi.ss.usermodel.Cell
 import org.apache.poi.ss.usermodel.CellType
-import org.junit.jupiter.api.DisplayName
-import org.junit.jupiter.api.TestFactory
 import toolkit.*
 import java.io.File
 import kotlin.test.assertNotNull
@@ -19,6 +18,7 @@ import kotlin.test.assertNotNull
 /**
  * Für das 2te Übungsblatt. 
  */
+@KTestDisplayNames
 class Test2 : de.fengl.ktestfactories.KTestFactory(
     {
         val config = File("./cfg/test2.json").loadConfigOrFail(::Test2Config)
