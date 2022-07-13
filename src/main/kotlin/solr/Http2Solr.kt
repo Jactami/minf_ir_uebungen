@@ -27,9 +27,13 @@ fun main() {
     ).apply {
 
     }.build().use { solr ->
-        Path("C:\\Users\\Felix Engl\\Downloads\\expanded_posts_backed_stackoverflow_sample.csv").readStackoverflowCSV().map(::StackOverflowEntry).map { it.toSolrBean() }.forEach {
-            solr.addBean("stackoverflow_v1", it)
-        }
+        Path("C:\\Users\\Felix Engl\\Downloads\\expanded_posts_backed_stackoverflow_sample.csv")
+            .readStackoverflowCSV()
+            .map(::StackOverflowEntry)
+            .map { it.toSolrBean() }
+            .forEach {
+                solr.addBean("stackoverflow_v1", it)
+            }
         solr.commit("stackoverflow_v1")
     }
 }

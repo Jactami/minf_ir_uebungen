@@ -56,10 +56,10 @@ class Test2 : de.fengl.ktestfactories.KTestFactory(
             when(cellType){
                 CellType.STRING -> {
                     if(stringCellValue.trim() == "-") -1
-                    else error("Value '$stringCellValue' not supported.")
+                    else error("Value '$stringCellValue' not supported. Please use a numeric.")
                 }
                 CellType.NUMERIC -> numericCellValue.toLong()
-                else -> error("A cell of type $cellType was not expected.")
+                else -> error("A cell of type $cellType was not expected. Please use either a minus (-) for empty fields or a number.")
             }
 
         fun DynamicTestGroup.task1Group(
