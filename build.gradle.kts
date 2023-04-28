@@ -1,7 +1,7 @@
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 
 plugins {
-    val kotlin_version = "1.6.20"
+    val kotlin_version = "1.8.20"
     kotlin("jvm") version kotlin_version
     kotlin("plugin.serialization") version kotlin_version
     application
@@ -9,6 +9,7 @@ plugins {
 
 group = "me.felix.ir"
 version = "1.0-SNAPSHOT"
+
 
 repositories {
     mavenCentral()
@@ -38,8 +39,8 @@ dependencies {
     implementation(kotlin("reflect"))
 
     // Kotlin Libs
-    implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.3.3")
-    implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.6.2")
+    implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.5.0")
+    implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.7.0-RC")
 
     //ktor
     implementation("io.ktor:ktor-client-core:$ktorVersion")
@@ -65,13 +66,19 @@ tasks.test {
     useJUnitPlatform()
 }
 
-tasks.withType<KotlinCompile> {
-    kotlinOptions.jvmTarget = "11"
-}
 
 
-val compileKotlin: KotlinCompile by tasks
+kotlin {
+    sourceSets.all {
+        languageSettings {
+            progressiveMode = true
+            optIn("kotlin.RequiresOptIn")
+        }
+    }
 
-compileKotlin.kotlinOptions {
-    freeCompilerArgs = listOf("-Xinline-classes")
+    java {
+        jvmToolchain {
+            languageVersion.set(JavaLanguageVersion.of(17))
+        }
+    }
 }

@@ -22,7 +22,7 @@ fun Number.bytes(): ByteArray =
 inline fun <reified T: Number> Iterable<T>.bytes(): ByteArray =
         if (this !is Collection<T>){ toList() } else { this }.bytes()
 
-
+@Suppress("UNCHECKED_CAST")
 inline fun <reified T: Number> Collection<T>.bytes(): ByteArray {
     if (isEmpty()) return byteArrayOf()
     return when(T::class){

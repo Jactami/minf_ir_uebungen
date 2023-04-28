@@ -82,9 +82,9 @@ class TestsFor1 : de.fengl.ktestfactories.KTestFactory() {
 
     override fun DynamicTestDefinitionRoot.init() {
         "Task 1" asTest {
-            val expected = Hash.create(103, 22, -121, 118, -105, 68, -5, 63, 10, 114, -127, 11, -6, 91, -125, 18, 91, 22, 35, -81, 5, 12, 47, 57, 59, 126, -17, 30, -28, 13, 65, 112)
+            val expected = Hash.create(-117, 26, 96, 18, -49, 108, 38, -77, 124, 59, 60, -106, -95, 74, -103, -57, -126, -7, -81, -86, -121, -61, 110, -57, 106, -35, 60, 35, -75, 24, 51, 55)
             val studentHash = pathToHandInExcel.readValueOf("1) GMAP"){
-                val toLoad = from(8, 1).to(8,2) and from(10, 1).to(10,2)
+                val toLoad = from(1, 5).to(1,6) and from(2, 5).to(2,6)
                 val cells = toLoad.cellsNotNull
                     .map { it.numericCellValue.toStringForEvalWithNDigits(5) }
                     .toList()
@@ -94,11 +94,13 @@ class TestsFor1 : de.fengl.ktestfactories.KTestFactory() {
             assertHashEquals(expected, studentHash)
         }
 
+        val nNDCG = 11
+
         "Task 3" asGroup {
             "Werte" asTest {
-                val expected = Hash.create(99, -105, 1, -6, -109, -19, -84, -51, 93, 12, -8, -5, 85, -113, 44, 20, -62, -49, 18, 6, -95, -61, -122, 54, 69, 117, 58, -22, -5, 64, -80, 46)
+                val expected = Hash.create(-21, -33, -122, -113, 34, 39, -95, -40, -122, 95, 107, 112, 47, -21, 26, -112, 14, -5, -59, 98, -84, 42, -2, 107, -112, 73, 107, -19, 25, 98, 87, 125)
                 val studentHash = pathToHandInExcel.readValueOf("3) NDCG"){
-                    val toLoad = from(35, 2).to(37, 8) and from(40, 2).to(41, 8)
+                    val toLoad = from(35, 2).to(37, 2+nNDCG) and from(40, 2).to(41, 2+nNDCG)
                     val cells = toLoad.cellsNotNull
                         .map { it.numericCellValue.toStringForEvalWithNDigits(5) }
                         .toList()
@@ -109,9 +111,9 @@ class TestsFor1 : de.fengl.ktestfactories.KTestFactory() {
             }
 
             "Evaluation" asTest {
-                val expected = Hash.create(-3, 10, -43, 28, 14, -53, -128, 28, 111, 121, -46, -16, 85, 54, -18, -123, -91, 47, 22, -73, -127, -3, 28, -78, 45, -26, 106, -68, -104, 72, -39, 46)
+                val expected = Hash.create(-50, 52, -22, -3, 45, -72, -96, 99, 71, 124, 99, 29, 52, 77, -117, 18, 27, -101, 20, 119, -74, -82, -17, 95, -22, -127, 49, -73, 91, -31, 45, -111)
                 val studentHash = pathToHandInExcel.readValueOf("3) NDCG"){
-                    val toLoad = from(43,2).to(43, 8)
+                    val toLoad = from(43,2).to(43, 2+nNDCG)
                     val callsString = toLoad.cellsNotNull
                         .map { it.stringCellValue.lowercase() }
                         .toList()
@@ -123,7 +125,7 @@ class TestsFor1 : de.fengl.ktestfactories.KTestFactory() {
         }
 
         "Task 4" asTest {
-            val expected = Hash.create(114, 58, -48, -75, -86, -18, 24, -123, 41, 83, -109, -86, 44, 55, 22, -100, -85, 90, 40, 94, -57, -88, -74, -76, -65, 62, 64, -12, 106, -61, -98, 9)
+            val expected = Hash.create(101, 14, -48, -128, 29, -9, 47, -21, 18, -35, -21, 15, 83, 75, -19, -62, -124, 113, -23, 42, -77, -5, 99, 38, 40, -37, 4, 26, -20, -107, -55, -66)
             val studentHash = pathToHandInExcel.readValueOf("4) Ranking"){
                 val toLoad = from(12,1).to(13, 3)
                 val cells = toLoad.cellsNotNull
@@ -136,7 +138,7 @@ class TestsFor1 : de.fengl.ktestfactories.KTestFactory() {
         }
 
         "Task 5" asTest {
-            val expected = Hash.create(-61, -62, -29, 23, -18, -101, -42, 64, -46, 112, 77, 81, 127, 44, 114, 19, -50, 92, -3, 42, -86, -42, 60, -88, 106, 35, 37, -21, -54, 36, 6, 64)
+            val expected = Hash.create(93, -99, -106, -125, 58, 62, -16, 52, 92, 36, 7, 40, 23, 2, -96, -27, -120, 12, 89, 76, 60, 84, 49, -117, -122, 99, 42, -3, 105, 90, -83, 66)
             val studentHash = pathToHandInExcel.readValueOf("5) t-Test"){
                 val toLoad = from(10, 1)
                 val cell = toLoad.cell?.numericCellValue?.toStringForEvalWithNDigits(5) ?: fail { "The value at $toLoad was not found." }
@@ -149,7 +151,7 @@ class TestsFor1 : de.fengl.ktestfactories.KTestFactory() {
         // Hole alt. lösungen
         "Task 6 (Min. 1 von 3 sollte positiv sein.)" asGroup {
             "Lucene (Bester Weg)" asTest {
-                val expected = Hash.create(-51, 42, -41, 93, 83, -65, -52, 30, 47, 69, 62, -53, -62, -3, -31, 47, -67, 66, 9, -30, 7, -108, 84, -29, -25, -34, 81, 22, -62, 110, -76, 53)
+                val expected = Hash.create(-37, 59, -66, 36, 43, -75, -4, 80, -54, 60, 90, -71, 17, 50, -95, 68, -83, -16, -72, 45, -46, -113, -30, 80, -57, -88, -48, 85, -92, 0, -39, -22)
                 val studentHash = pathToHandInExcel.readValueOf("6) VSM"){
                     val toLoad = from(20,1).to(21, 1)
                     val cells = toLoad.cellsNotNull
@@ -162,7 +164,7 @@ class TestsFor1 : de.fengl.ktestfactories.KTestFactory() {
             }
 
             "Alternative 1" asTest {
-                val expected = Hash.create(-120, -41, 45, -48, -58, 6, -23, 34, -93, 22, 25, -22, 67, 70, 63, 121, -106, 24, 91, -110, 25, 98, 69, 2, 52, -79, 54, -55, 4, -70, 1, 45)
+                val expected = Hash.create(-37, 59, -66, 36, 43, -75, -4, 80, -54, 60, 90, -71, 17, 50, -95, 68, -83, -16, -72, 45, -46, -113, -30, 80, -57, -88, -48, 85, -92, 0, -39, -22)
                 val studentHash = pathToHandInExcel.readValueOf("6) VSM"){
                     val toLoad = from(20,1).to(21, 1)
                     val cells = toLoad.cellsNotNull
@@ -175,7 +177,7 @@ class TestsFor1 : de.fengl.ktestfactories.KTestFactory() {
             }
 
             "Alternative 2" asTest {
-                val expected = Hash.create(-120, -41, 45, -48, -58, 6, -23, 34, -93, 22, 25, -22, 67, 70, 63, 121, -106, 24, 91, -110, 25, 98, 69, 2, 52, -79, 54, -55, 4, -70, 1, 45)
+                val expected = Hash.create(-37, 59, -66, 36, 43, -75, -4, 80, -54, 60, 90, -71, 17, 50, -95, 68, -83, -16, -72, 45, -46, -113, -30, 80, -57, -88, -48, 85, -92, 0, -39, -22)
                 val studentHash = pathToHandInExcel.readValueOf("6) VSM"){
                     val toLoad = from(20,1).to(21, 1)
                     val cells = toLoad.cellsNotNull

@@ -64,7 +64,7 @@ object FieldCommandSerializerPolyWrapper : JsonContentPolymorphicSerializer<Fiel
     fun <T: FieldCommand> getSerializerFor(cmd: KClass<T>): KSerializer<T> = subclasses[CommandName.getCommandName(cmd).value] as KSerializer<T>
     fun <T: FieldCommand> getSerializerFor(cmd: T): KSerializer<T> = subclasses[CommandName.getCommandName(cmd::class).value] as KSerializer<T>
 
-    override fun selectDeserializer(element: JsonElement): DeserializationStrategy<out FieldCommand> =
+    override fun selectDeserializer(element: JsonElement): DeserializationStrategy<FieldCommand> =
         when(element){
             is JsonObject -> { subclasses.getValue(element.keys.single()) }
             else -> error("The element has to be a json object!")

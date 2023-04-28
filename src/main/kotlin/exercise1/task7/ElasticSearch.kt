@@ -16,7 +16,6 @@ import io.ktor.serialization.kotlinx.json.*
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.json.*
 import toolkit.div
-import java.io.Closeable
 import java.io.File
 
 
@@ -143,7 +142,7 @@ class ESIndexSession(
      * Delete a pit
      */
     private suspend fun Pit.delete() =
-            client.delete(baseUrl/"_pit"){
+            client.delete(baseUrl/"_pit") toDel@{
                 contentType(ContentType.Application.Json)
                 setBody(this@delete)
             }.successful

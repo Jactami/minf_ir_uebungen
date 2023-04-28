@@ -80,7 +80,7 @@ abstract class CommandNameSerializerPolyWrapper<T: Any> private constructor(kCla
 
     fun <V: T> getSerializerForKClass(cmd: KClass<V>): KSerializer<V> = subclasses[CommandName.getCommandName(cmd).value] as KSerializer<V>
 
-    override fun selectDeserializer(element: JsonElement): DeserializationStrategy<out T> =
+    override fun selectDeserializer(element: JsonElement): DeserializationStrategy<T> =
         when(element){
             is JsonObject -> {
                 subclasses.getValue(element.keys.single())
@@ -89,6 +89,7 @@ abstract class CommandNameSerializerPolyWrapper<T: Any> private constructor(kCla
         }
 }
 
+@Suppress("UNCHECKED_CAST")
 fun <T: Any> Json.serializeCommand(command: T): JsonElement {
     val seri = CommandNameSerializerPolyWrapper(
         command::class.superclasses.single { it.isSealed },
@@ -100,6 +101,7 @@ fun <T: Any> Json.serializeCommand(command: T): JsonElement {
     )
 }
 
+@Suppress("UNCHECKED_CAST")
 inline fun <reified T: Any> Json.deserializeCommand(jsonElement: JsonElement): T = decodeFromJsonElement(
     CommandNameSerializerPolyWrapper(
         if (T::class.isSealed) T::class else T::class.superclasses.single { it.isSealed },
