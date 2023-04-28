@@ -97,6 +97,9 @@ ECHO.
 ECHO Anfrage 5:
 curl localhost:9200/shakespeare/_search?size=50^&pretty=true -H "Content-Type: application/json" -d @anfrage5.json > "%~dp0ergebnis5.json"
 ECHO.
+ECHO Anfrage 6:
+curl localhost:9200/shakespeare/_search?size=50^&pretty=true -H "Content-Type: application/json" -d @anfrage6.json > "%~dp0ergebnis6.json"
+ECHO.
 
 :END
 ECHO Done
