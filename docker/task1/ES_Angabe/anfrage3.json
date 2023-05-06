@@ -1,5 +1,27 @@
 {
     "query": {
-
+        "bool": {
+            "must": [
+                {
+                    "regexp": {
+                        "speaker.keyword": {
+                            "value": ".*Clown.*",
+                            "flags": "ALL"
+                        }
+                    }
+                },
+                {
+                    "bool": {
+                        "must_not": [
+                            {
+                                "match": {
+                                    "speaker.keyword": "Clown"
+                                }
+                            }
+                        ]
+                    }
+                }
+            ]
+        }
     }
 }
