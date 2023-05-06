@@ -1,5 +1,22 @@
 {
     "query": {
-
+        "bool": {
+            "must": [
+                {
+                    "term": {
+                        "text_entry": {
+                            "value": "wine"
+                        }
+                    }
+                },
+                {
+                    "term": {
+                        "text_entry": {
+                            "value": "life"
+                        }
+                    }
+                }
+            ]
+        }
     }
 }
