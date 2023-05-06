@@ -8,8 +8,19 @@
                     }
                 },
                 {
-                    "match": {
-                        "speaker": "demetrius"
+                    "bool": {
+                        "should": [
+                            {
+                                "match": {
+                                    "speaker": "antony"
+                                }
+                            },
+                            {
+                                "match": {
+                                    "speaker": "demetrius"
+                                }
+                            }
+                        ]
                     }
                 }
             ]
