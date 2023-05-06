@@ -1,5 +1,27 @@
 {
     "query": {
-
+        "bool": {
+            "must": [
+                {
+                    "range": {
+                        "speech_number": {
+                            "lte": 20
+                        }
+                    }
+                },
+                {
+                    "match_phrase": {
+                        "text_entry": "you shall not"
+                    }
+                }
+            ],
+            "must_not": [
+                {
+                    "match_phrase": {
+                        "text_entry": "my lord"
+                    }
+                }
+            ]
+        }
     }
 }
