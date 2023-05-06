@@ -1,5 +1,13 @@
 {
     "query": {
-
+        "bool": {
+            "must": [
+                {
+                    "match": {
+                        "speaker.keyword": "Clown"
+                    }
+                }
+            ]
+        }
     }
 }
